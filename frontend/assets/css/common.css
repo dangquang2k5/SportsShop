@@ -1,0 +1,284 @@
+/* ============================================
+   COMMON STYLES FOR ALL PAGES
+   ============================================ */
+
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #ffffff;
+    transition: background 0.3s ease;
+}
+
+body.dark {
+    background: #0a0e27;
+    color: #e5e7eb;
+}
+
+/* ============================================
+   GLASSMORPHISM EFFECT
+   ============================================ */
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass {
+    background: rgba(15, 39, 68, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   MODERN CARD STYLES
+   ============================================ */
+.modern-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.modern-card:hover::before {
+    left: 100%;
+}
+
+.modern-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(0, 240, 255, 0.3);
+}
+
+/* ============================================
+   NEON BUTTON STYLES
+   ============================================ */
+.btn-neon {
+    position: relative;
+    padding: 12px 32px;
+    font-weight: 600;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #00f0ff, #0066ff);
+    color: white;
+    border: none;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-neon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-neon:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-neon:hover {
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   LOADING ANIMATION
+   ============================================ */
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(0, 240, 255, 0.2);
+    border-top-color: #00f0ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   SMOOTH SCROLL & SCROLLBAR
+   ============================================ */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a2e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #00f0ff, #0066ff);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #00d4ff, #0055ff);
+}
+
+/* ============================================
+   MOBILE MENU ANIMATION
+   ============================================ */
+.mobile-menu {
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+}
+
+/* ============================================
+   ADMIN SIDEBAR STICKY
+   ============================================ */
+#admin-sidebar {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 256px;
+    height: auto;
+    max-height: calc(100vh - 80px - 20px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    z-index: 25;
+}
+
+/* Prevent sidebar content from overlapping footer */
+#admin-sidebar .p-6 {
+    padding-bottom: 80px !important;
+}
+
+/* Smooth scrolling for sidebar */
+#admin-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#admin-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#admin-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.3);
+    border-radius: 3px;
+}
+
+#admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 240, 255, 0.5);
+}
+
+/* Ensure sidebar doesn't overlap footer */
+footer {
+    position: relative;
+    z-index: 30;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.nav-link {
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #00f0ff;
+}
+
+/* Animation Classes */
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+}
+
+.animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.4s ease-out;
+}
+
+.animate-glow {
+    animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+    0% { transform: translateY(30px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+    0% { transform: translateY(-10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(0, 240, 255, 0.8); }
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+@media (max-width: 768px) {
+    .btn-neon {
+        padding: 10px 24px;
+        font-size: 14px;
+    }
+
+    .modern-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* ============================================
+   DARK MODE ADJUSTMENTS
+   ============================================ */
+.dark body {
+    background-color: #0a0e27;
+}
+
+.dark .modern-card {
+    background-color: rgba(15, 39, 68, 0.5);
+}

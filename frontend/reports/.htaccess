@@ -1,0 +1,14 @@
+# Allow HTML files to be accessed
+<FilesMatch "\.(html)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
+
+# Prevent access to PHP files (except when explicitly called)
+<FilesMatch "index\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

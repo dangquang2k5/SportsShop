@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: sportshop_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "030705"
+      MYSQL_DATABASE: SportsStoreDB
+    ports:
+      - "3340:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/complete_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - sportshop_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p030705"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Java Spring Boot Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sportshop_backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/SportsStoreDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "030705"
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - sportshop_network
+    restart: unless-stopped
+
+  # PHP Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sportshop_frontend
+    environment:
+      DB_HOST: mysql
+      DB_NAME: SportsStoreDB
+      DB_USER: root
+      DB_PASSWORD: "030705"
+      API_URL: http://backend:8080
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+      - backend
+    volumes:
+      - ./frontend:/var/www/html
+    networks:
+      - sportshop_network
+    restart: unless-stopped
+
+networks:
+  sportshop_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
