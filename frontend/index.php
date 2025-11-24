@@ -40,7 +40,7 @@ include 'includes/layout_header.php';
             <!-- Main Heading -->
             <h1 class="text-6xl lg:text-8xl font-black text-white leading-tight animate-slide-up">
                 Chào mừng đến <br>
-                <span class="bg-gradient-to-r from-sport-neon via-blue-400 to-purple-400 bg-clip-text text-transparent animate-glow">
+                <span  class="text-sport-neon">
                     SportShop
                 </span>
             </h1>
@@ -51,7 +51,7 @@ include 'includes/layout_header.php';
             </p>
             
             <p class="text-lg text-gray-400 max-w-2xl mx-auto animate-slide-up" style="animation-delay: 0.3s;">
-                Tống Xuân Định _ 0008268 _ 68PM2 _ Đồ án công nghệ web nâng cao
+                Đồ án công nghệ thiết kế web nâng cao - Nhóm 6 
             </p>
             
             <!-- CTA Buttons -->
@@ -79,7 +79,7 @@ include 'includes/layout_header.php';
                     <div class="text-gray-300 text-sm">Khách hàng</div>
                 </div>
                 <div class="glass p-6 rounded-2xl">
-                    <div class="text-4xl font-black text-sport-neon mb-2">4.5★</div>
+                    <div class="text-4xl font-black text-sport-neon mb-2">4.9★</div>
                     <div class="text-gray-300 text-sm">Đánh giá</div>
                 </div>
             </div>
