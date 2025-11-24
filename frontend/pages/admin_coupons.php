@@ -220,10 +220,10 @@ include '../includes/layout_header.php';
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="font-bold text-sport-neon"><?php echo formatPrice($coupon['DiscountValue']); ?>₫</span>
+                                        <span class="font-bold text-sport-neon"><?php echo formatPrice($coupon['DiscountValue']); ?> ₫</span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                        <?php echo formatPrice($coupon['MinOrderValue']); ?>₫
+                                        <?php echo formatPrice($coupon['MinOrderValue']); ?> ₫
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                         <?php echo number_format($coupon['Quantity']); ?>

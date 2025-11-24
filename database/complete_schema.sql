@@ -736,4 +736,4 @@ INSERT INTO ProductDetail (ProductID, Size, Color, Quantity) VALUES
 
 
 
---thieu demo cua nhung cai khac
+-- thieu demo cua nhung cai khac

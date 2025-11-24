@@ -330,7 +330,7 @@ function proceedToCheckout() {
 
 // Format price
 function formatPrice(price) {
-    return new Intl.NumberFormat('vi-VN').format(price);
+    return new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
 }
 
 // Initialize on page load

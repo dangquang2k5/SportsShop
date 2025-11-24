@@ -395,7 +395,7 @@ include '../includes/layout_header.php';
                                     <?php echo htmlspecialchars($product['BrandName']); ?>
                                 </td>
                                 <td class="px-6 py-4 font-bold text-sport-neon">
-                                    <?php echo formatPrice($product['Price']); ?>₫
+                                    <?php echo formatPrice($product['Price']); ?> ₫
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="px-3 py-1 rounded-full text-xs font-bold <?php echo $product['Status'] == 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">

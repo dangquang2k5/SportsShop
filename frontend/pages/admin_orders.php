@@ -222,7 +222,7 @@ include '../includes/layout_header.php';
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <p class="text-sm text-green-100 mb-1">Doanh thu</p>
-                            <h3 class="text-2xl font-black"><?php echo formatPrice($totalRevenue); ?>₫</h3>
+                            <h3 class="text-2xl font-black"><?php echo formatPrice($totalRevenue); ?> ₫</h3>
                         </div>
                         <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
                             <i class="fas fa-dollar-sign text-3xl"></i>
@@ -317,7 +317,7 @@ include '../includes/layout_header.php';
                                         <?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="font-bold text-sport-neon"><?php echo formatPrice($order['TotalAmount']); ?>₫</span>
+                                        <span class="font-bold text-sport-neon"><?php echo formatPrice($order['TotalAmount']); ?> ₫</span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <form method="POST" style="display: inline;">
@@ -560,10 +560,7 @@ function closeOrderDetailsModal() {
 }
 
 function formatPrice(price) {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).format(price);
+    return new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
 }
 </script>
 
