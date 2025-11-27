@@ -1,9 +1,7 @@
 <?php
 require_once '../config.php';
 
-if (!isLoggedIn()) {
-    redirect('login.php');
-}
+// Guest checkout allowed - no login required
 
 $error = '';
 $success = '';
@@ -19,7 +17,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cartData = $_POST['cart_data'] ?? '';
     $couponData = $_POST['coupon_data'] ?? '';
     
-    if (empty($shippingAddress) || empty($shippingCity) || empty($shippingPhone)) {
+    // Get guest info if not logged in
+    $guestName = '';
+    $guestEmail = '';
+    if (!isLoggedIn()) {
+        $guestName = sanitizeInput($_POST['guest_name'] ?? '');
+        $guestEmail = sanitizeInput($_POST['guest_email'] ?? '');
+        
+        if (empty($guestName) || empty($guestEmail)) {
+            $error = 'Vui lòng điền đầy đủ thông tin liên hệ (họ tên và email)';
+        }
+    }
+    
+    if (empty($error) && (empty($shippingAddress) || empty($shippingCity) || empty($shippingPhone))) {
         $error = 'Vui lòng điền đầy đủ thông tin giao hàng';
     } elseif (empty($cartData)) {
         $error = 'Giỏ hàng trống';
@@ -56,16 +66,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Create order
             $fullAddress = $shippingAddress . ', ' . $shippingCity;
+            $userID = isLoggedIn() ? $_SESSION['user_id'] : null; // Guest checkout: NULL user ID
+            
+            // Add guest info to notes if guest checkout
+            $guestInfo = '';
+            if (!isLoggedIn()) {
+                $guestInfo = "THÔNG TIN KHÁCH VÃNG LAI:\nHọ tên: $guestName\nEmail: $guestEmail\n";
+            }
+            $fullNotes = $guestInfo . $notes;
+            
             $stmt = $db->prepare("
                 INSERT INTO Orders (UserID, TotalAmount, Address, Status, VoucherID, Note, created_at) 
                 VALUES (?, ?, ?, 'pending', ?, ?, NOW())
             ");
             $stmt->execute([
-                $_SESSION['user_id'],
+                $userID,
                 $totalAmount,
                 $fullAddress,
                 $voucherID,
-                $notes
+                $fullNotes
             ]);
             
             $orderID = $db->lastInsertId();
@@ -95,11 +114,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get user info
-$db = Database::getInstance()->getConnection();
-$stmt = $db->prepare("SELECT * FROM Users WHERE UserID = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch();
+// Get user info if logged in
+$user = null;
+if (isLoggedIn()) {
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->prepare("SELECT * FROM Users WHERE UserID = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch();
+}
 
 $pageTitle = "Thanh toán";
 $isInPages = true;
@@ -171,9 +193,11 @@ include '../includes/layout_header.php';
                 <p class="text-sm"><i class="fas fa-truck mr-2"></i>Thời gian giao hàng dự kiến: 2-3 ngày</p>
             </div>
             <div class="flex justify-center space-x-4">
+                <?php if (isLoggedIn()): ?>
                 <a href="profile.php" class="btn-neon px-6 py-3 inline-block relative z-10">
                     <i class="fas fa-list mr-2"></i>Xem đơn hàng
                 </a>
+                <?php endif; ?>
                 <a href="generate_invoice.php?order_id=<?php echo $orderID; ?>" target="_blank" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-purple-700 text-white font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 inline-block">
                     <i class="fas fa-file-pdf mr-2"></i>In hóa đơn
                 </a>
@@ -203,6 +227,7 @@ include '../includes/layout_header.php';
                         Thông tin liên hệ
                     </h3>
                     
+                    <?php if (isLoggedIn()): ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Họ và tên</label>
@@ -219,6 +244,35 @@ include '../includes/layout_header.php';
                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-sport-blue text-gray-900 dark:text-white">
                         </div>
                     </div>
+                    <?php else: ?>
+                    <div class="space-y-4">
+                        <p class="text-sm text-blue-600 dark:text-blue-400 mb-4">
+                            <i class="fas fa-info-circle mr-2"></i>Bạn đang mua hàng với tư cách khách vãng lai. Vui lòng cung cấp thông tin liên hệ.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Họ và tên <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" 
+                                       name="guest_name" 
+                                       required
+                                       class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-sport-blue text-gray-900 dark:text-white focus:border-sport-neon focus:ring-2 focus:ring-sport-neon/20 transition-all duration-300"
+                                       placeholder="Nguyễn Văn A">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Email <span class="text-red-500">*</span>
+                                </label>
+                                <input type="email" 
+                                       name="guest_email" 
+                                       required
+                                       class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-sport-blue text-gray-900 dark:text-white focus:border-sport-neon focus:ring-2 focus:ring-sport-neon/20 transition-all duration-300"
+                                       placeholder="email@example.com">
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Shipping Information -->
@@ -235,7 +289,7 @@ include '../includes/layout_header.php';
                             </label>
                             <input type="tel" 
                                    name="shipping_phone" 
-                                   value="<?php echo htmlspecialchars($user['Phone']); ?>"
+                                   value="<?php echo htmlspecialchars($user['Phone'] ?? ''); ?>"
                                    required
                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-sport-blue text-gray-900 dark:text-white focus:border-sport-neon focus:ring-2 focus:ring-sport-neon/20 transition-all duration-300"
                                    placeholder="0912345678">
@@ -652,7 +706,7 @@ function removeCoupon() {
 
 // Format price
 function formatPrice(price) {
-    return new Intl.NumberFormat('vi-VN').format(price);
+    return new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
 }
 
 // Initialize
