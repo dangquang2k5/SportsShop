@@ -35,7 +35,7 @@
                 <div class="space-y-4 animate-fade-in" style="animation-delay: 0.1s;">
                     <h3 class="text-lg font-bold text-sport-neon">Liên kết nhanh</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Về chúng tôi</a></li>
+                        <li><a href="https://web.facebook.com/groups/L4D2VN/posts/4136723749908744/?_rdc=1&_rdr#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Về chúng tôi</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Sản phẩm</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Tin tức</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Liên hệ</a></li>
@@ -315,5 +315,321 @@
         // Initial call
         updateSidebarPosition();
     </script>
-</body>
-</html>
+<?php
+// --- PHẦN LOGIC PHP ---
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$chatUserId = 0;
+$userRole = 'guest';
+
+if (isset($_SESSION['User_id'])) {
+    $chatUserId = $_SESSION['User_id'];
+} elseif (isset($_SESSION['user_id'])) {
+    $chatUserId = $_SESSION['user_id'];
+}
+
+if (isset($_SESSION['Role'])) {
+    $userRole = $_SESSION['Role'];
+} elseif (isset($_SESSION['role'])) {
+    $userRole = $_SESSION['role'];
+}
+?>
+
+<style>
+    /* Nút tròn góc màn hình */
+    #chat-widget-btn {
+        position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+        border-radius: 50%; box-shadow: 0 4px 20px rgba(0,0,0,0.2); cursor: pointer; z-index: 9999;
+        display: flex; justify-content: center; align-items: center; transition: all 0.3s;
+    }
+    #chat-widget-btn:hover { transform: scale(1.1); box-shadow: 0 6px 25px rgba(0,0,0,0.3); }
+    #chat-widget-btn i { font-size: 26px; color: white; }
+
+    /* Khung Popup chung */
+    .chat-popup {
+        display: none; position: fixed; bottom: 100px; right: 30px; width: 360px; height: 500px;
+        background: white; border-radius: 16px; box-shadow: 0 5px 40px rgba(0,0,0,0.15);
+        z-index: 9999; flex-direction: column; overflow: hidden; border: 1px solid #f0f0f0;
+        animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .chat-header {
+        padding: 15px; color: white; font-weight: bold; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    /* Bong bóng tin nhắn */
+    .chat-body { flex: 1; padding: 15px; overflow-y: auto; background: #f9fafb; display: flex; flex-direction: column; gap: 8px; }
+    .chat-footer { padding: 12px; background: white; border-top: 1px solid #eee; display: flex; gap: 8px; }
+    .chat-footer input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; outline: none; background: #f8f9fa; }
+    .chat-footer button { width: 40px; height: 40px; border-radius: 50%; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    .bubble { max-width: 75%; padding: 8px 14px; border-radius: 16px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+    
+    /* Màu sắc tin nhắn */
+    .bubble.me { background: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+    .bubble.other { background: #e5e7eb; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+</style>
+
+<?php if ($userRole === 'admin'): ?>
+
+    <style>
+        #chat-widget-btn { background: linear-gradient(135deg, #dc2626, #ef4444); } /* Admin màu đỏ cho quyền lực */
+        .chat-header { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+        .chat-footer button { background: #dc2626; }
+
+        /* Style riêng cho danh sách user */
+        .admin-user-list { flex: 1; overflow-y: auto; background: white; }
+        .user-row { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .user-row:hover { background: #fff1f2; }
+        .user-avatar { width: 35px; height: 35px; background: #fee2e2; color: #dc2626; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; }
+        .user-info h4 { margin: 0; font-size: 14px; font-weight: 600; color: #333; }
+        .user-info p { margin: 0; font-size: 11px; color: #888; }
+        
+        /* Ẩn hiện các view */
+        #view-chat-detail { display: none; flex-direction: column; height: 100%; }
+        #view-user-list { display: flex; flex-direction: column; height: 100%; }
+    </style>
+
+    <div id="chat-widget-btn" onclick="toggleAdminPopup()">
+        <i class="fas fa-user-shield"></i>
+        <span id="admin-badge" style="position:absolute; top:-5px; right:-5px; background:white; color:red; font-size:12px; font-weight:bold; width:22px; height:22px; border-radius:50%; display:flex; justify-content:center; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.2);">!</span>
+    </div>
+
+    <div id="admin-chat-popup" class="chat-popup">
+        
+        <div id="view-user-list">
+            <div class="chat-header">
+                <span><i class="fas fa-list mr-2"></i>Danh sách cần hỗ trợ</span>
+                <span style="cursor:pointer" onclick="toggleAdminPopup()">&times;</span>
+            </div>
+            <div class="admin-user-list" id="list-container">
+                <p style="text-align:center; padding:20px; color:#999;">Đang tải danh sách...</p>
+            </div>
+        </div>
+
+        <div id="view-chat-detail">
+            <div class="chat-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-arrow-left" style="cursor:pointer;" onclick="backToList()"></i>
+                    <span id="chat-user-name">Khách hàng</span>
+                </div>
+                <span style="cursor:pointer" onclick="toggleAdminPopup()">&times;</span>
+            </div>
+            <div class="chat-body" id="admin-msg-container"></div>
+            <div class="chat-footer">
+                <input type="text" id="admin-input" placeholder="Trả lời khách hàng..." onkeypress="checkAdminEnter(event)">
+                <button onclick="sendAdminMsg()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/messages';
+        let currentTargetId = 0;
+        let adminInterval = null;
+
+        function toggleAdminPopup() {
+            const popup = document.getElementById('admin-chat-popup');
+            if (popup.style.display === 'none' || popup.style.display === '') {
+                popup.style.display = 'flex';
+                loadUserList(); // Tải danh sách khi mở
+                adminInterval = setInterval(loadUserList, 5000); // Cập nhật danh sách
+            } else {
+                popup.style.display = 'none';
+                if(adminInterval) clearInterval(adminInterval);
+            }
+        }
+
+        async function loadUserList() {
+            try {
+                const res = await fetch(`${API_BASE}/users-chatted`);
+                const users = await res.json();
+                const listDiv = document.getElementById('list-container');
+                
+                // Cập nhật số lượng thông báo
+                document.getElementById('admin-badge').innerText = users.length;
+
+                if(users.length === 0) {
+                    listDiv.innerHTML = '<p style="text-align:center; margin-top:50px; color:#888">Chưa có tin nhắn nào</p>';
+                    return;
+                }
+
+                // Giữ lại nội dung cũ nếu đang chat để tránh lag UI, chỉ render khi ở view list
+                if(document.getElementById('view-chat-detail').style.display === 'flex') return;
+
+                listDiv.innerHTML = '';
+                users.forEach(u => {
+                    const name = (u.firstName && u.lastName) ? `${u.lastName} ${u.firstName}` : u.email;
+                    const div = document.createElement('div');
+                    div.className = 'user-row';
+                    div.onclick = () => openChatDetail(u.userId, name);
+                    div.innerHTML = `
+                        <div class="user-avatar">${name.charAt(0).toUpperCase()}</div>
+                        <div class="user-info">
+                            <h4>${name}</h4>
+                            <p>${u.email}</p>
+                        </div>
+                        <i class="fas fa-chevron-right" style="margin-left:auto; color:#ccc; font-size:12px;"></i>
+                    `;
+                    listDiv.appendChild(div);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function openChatDetail(userId, name) {
+            currentTargetId = userId;
+            document.getElementById('view-user-list').style.display = 'none';
+            document.getElementById('view-chat-detail').style.display = 'flex';
+            document.getElementById('chat-user-name').innerText = name;
+            
+            // Dừng update list, chuyển sang update message
+            if(adminInterval) clearInterval(adminInterval);
+            loadAdminMessages();
+            adminInterval = setInterval(loadAdminMessages, 3000);
+        }
+
+        function backToList() {
+            currentTargetId = 0;
+            document.getElementById('view-chat-detail').style.display = 'none';
+            document.getElementById('view-user-list').style.display = 'flex';
+            
+            // Dừng update message, quay lại update list
+            if(adminInterval) clearInterval(adminInterval);
+            loadUserList();
+            adminInterval = setInterval(loadUserList, 5000);
+        }
+
+        async function loadAdminMessages() {
+            if(!currentTargetId) return;
+            try {
+                const res = await fetch(`${API_BASE}/history/${currentTargetId}`);
+                const data = await res.json();
+                const container = document.getElementById('admin-msg-container');
+                container.innerHTML = '';
+                
+                data.forEach(msg => {
+                    // Admin View: AdminFlag=true là 'me', false là 'other'
+                    const isMe = (msg.adminFlag === true);
+                    const div = document.createElement('div');
+                    div.className = `bubble ${isMe ? 'me' : 'other'}`;
+                    div.innerText = msg.content;
+                    container.appendChild(div);
+                });
+                container.scrollTop = container.scrollHeight;
+            } catch (e) { console.error(e); }
+        }
+
+        async function sendAdminMsg() {
+            const input = document.getElementById('admin-input');
+            const content = input.value.trim();
+            if(!content || !currentTargetId) return;
+
+            try {
+                await fetch(`${API_BASE}/admin/send`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ userId: currentTargetId, content: content })
+                });
+                input.value = '';
+                loadAdminMessages();
+            } catch (e) { alert("Lỗi gửi tin"); }
+        }
+
+        function checkAdminEnter(e) { if(e.key === 'Enter') sendAdminMsg(); }
+    </script>
+
+
+<?php else: ?>
+
+    <style>
+        #chat-widget-btn { background: linear-gradient(135deg, #007bff, #00d4ff); } /* Khách màu xanh */
+        .chat-header { background: linear-gradient(135deg, #007bff, #0056b3); }
+        .chat-footer button { background: #007bff; }
+    </style>
+
+    <div id="chat-widget-btn" onclick="toggleUserPopup()">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <div id="user-chat-popup" class="chat-popup">
+        <div class="chat-header">
+            <span><i class="fas fa-headset mr-2"></i>Hỗ trợ khách hàng</span>
+            <span style="cursor:pointer" onclick="toggleUserPopup()">&times;</span>
+        </div>
+        <div class="chat-body" id="user-msg-container">
+            <p style="text-align:center; color:#888; margin-top:50px;">Xin chào! Shop có thể giúp gì?</p>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="user-input" placeholder="Nhập tin nhắn..." onkeypress="checkUserEnter(event)">
+            <button onclick="sendUserMsg()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const CURRENT_USER_ID = <?php echo $chatUserId; ?>;
+        const API_BASE = 'http://localhost:8080/api/messages';
+        let userInterval = null;
+
+        function toggleUserPopup() {
+            const popup = document.getElementById('user-chat-popup');
+            if (popup.style.display === 'none' || popup.style.display === '') {
+                popup.style.display = 'flex';
+                loadUserHistory();
+                userInterval = setInterval(loadUserHistory, 3000);
+            } else {
+                popup.style.display = 'none';
+                if(userInterval) clearInterval(userInterval);
+            }
+        }
+
+        async function loadUserHistory() {
+            if(CURRENT_USER_ID === 0) return;
+            try {
+                const res = await fetch(`${API_BASE}/history/${CURRENT_USER_ID}`);
+                const data = await res.json();
+                const container = document.getElementById('user-msg-container');
+                container.innerHTML = '';
+                
+                if(data.length === 0) {
+                     container.innerHTML = '<p style="text-align:center; color:#888; margin-top:50px;">Hãy bắt đầu trò chuyện!</p>';
+                     return;
+                }
+
+                data.forEach(msg => {
+                    // User View: AdminFlag=true là 'other' (Shop), false là 'me'
+                    const isShop = (msg.adminFlag === true);
+                    const div = document.createElement('div');
+                    div.className = `bubble ${isShop ? 'other' : 'me'}`;
+                    div.innerText = msg.content;
+                    container.appendChild(div);
+                });
+                container.scrollTop = container.scrollHeight;
+            } catch (e) {}
+        }
+
+        async function sendUserMsg() {
+            const input = document.getElementById('user-input');
+            const content = input.value.trim();
+            if(CURRENT_USER_ID === 0) { alert("Vui lòng đăng nhập!"); return; }
+            if(!content) return;
+
+            try {
+                await fetch(`${API_BASE}/send`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ userId: CURRENT_USER_ID, content: content })
+                });
+                input.value = '';
+                loadUserHistory();
+            } catch (e) { alert("Lỗi kết nối"); }
+        }
+
+        function checkUserEnter(e) { if(e.key === 'Enter') sendUserMsg(); }
+    </script>
+
+<?php endif; ?>
+
