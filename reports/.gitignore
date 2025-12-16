@@ -1,0 +1,8 @@
+# Ignore all HTML report files
+*.html
+
+# Keep folder structure
+!.gitignore
+!README.md
+!index.php
+!.htaccess
