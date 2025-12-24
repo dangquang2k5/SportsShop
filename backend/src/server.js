@@ -66,29 +66,14 @@ const startServer = async () => {
         // Start listening
         app.listen(PORT, () => {
             console.log('');
-            console.log('╔═══════════════════════════════════════════════════════╗');
-            console.log('║                                                       ║');
-            console.log('║       🏃 SportShop Backend Server Running 🏃         ║');
-            console.log('║                                                       ║');
-            console.log('╚═══════════════════════════════════════════════════════╝');
-            console.log('');
-            console.log(`🚀 Server:      http://localhost:${PORT}`);
-            console.log(`🏥 Health:      http://localhost:${PORT}/health`);
-            console.log(`📡 API:         http://localhost:${PORT}/api`);
-            console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log('');
-            console.log('Available API endpoints:');
-            console.log('  - POST   /api/auth/register');
-            console.log('  - POST   /api/auth/login');
-            console.log('  - GET    /api/auth/me');
-            console.log('  - GET    /api/products');
-            console.log('  - GET    /api/products/:id');
-            console.log('  - POST   /api/orders');
-            console.log('  - GET    /api/vouchers');
-            console.log('  - GET    /api/categories');
-            console.log('  - GET    /api/brands');
-            console.log('');
-            console.log('Press Ctrl+C to stop the server');
+console.log(' ███████╗██╗     ██╗   ██╗███████╗██╗ █████╗        ██╗███████╗');
+console.log(' ██╔════╝██║     ╚██╗ ██╔╝██╔════╝██║██╔══██╗       ██║██╔════╝');
+console.log(' █████╗  ██║      ╚████╔╝ ███████╗██║███████║       ██║███████╗');
+console.log(' ██╔══╝  ██║       ╚██╔╝  ╚════██║██║██╔══██║  ██   ██║╚════██║');
+console.log(' ███████╗███████╗   ██║   ███████║██║██║  ██║  ╚█████╔╝███████║');
+console.log('                 ❤️  WITH TONG XUAN DINH LOVE  ❤️');
+console.log('');
+
             console.log('');
         });
     } catch (error) {
