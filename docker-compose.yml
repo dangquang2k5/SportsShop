@@ -8,11 +8,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "030705"
       MYSQL_DATABASE: SportsStoreDB
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --skip-character-set-client-handshake
     ports:
       - "3340:3306"
@@ -22,27 +17,18 @@ services:
     networks:
       - sportshop_network
     healthcheck:
-<<<<<<< HEAD
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p030705" ]
-=======
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p030705"]
->>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
       interval: 10s
       timeout: 5s
       retries: 5
 
-<<<<<<< HEAD
   # Node.js Backend Service
-=======
-  # Java Spring Boot Backend Service
->>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: sportshop_backend
     environment:
-<<<<<<< HEAD
       PORT: 3000
       NODE_ENV: development
       DB_HOST: mysql
@@ -61,17 +47,6 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-=======
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/SportsStoreDB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8"
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: "030705"
-      SERVER_PORT: 8080
-    ports:
-      - "8080:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
->>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     networks:
       - sportshop_network
     restart: unless-stopped
@@ -83,25 +58,12 @@ services:
       dockerfile: Dockerfile
     container_name: sportshop_frontend
     environment:
-<<<<<<< HEAD
       BACKEND_URL: http://backend:3000
     ports:
       - "8081:80"
     depends_on:
       - backend
       - mysql
-=======
-      DB_HOST: mysql
-      DB_NAME: SportsStoreDB
-      DB_USER: root
-      DB_PASSWORD: "030705"
-      API_URL: http://backend:8080
-    ports:
-      - "8081:80"
-    depends_on:
-      - mysql
-      - backend
->>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     volumes:
       - ./frontend:/var/www/html
     networks:
