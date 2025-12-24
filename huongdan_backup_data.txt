@@ -1,0 +1,9 @@
+câu lệnh 1: lưu trong container
+docker exec sportshop_mysql mysqldump -u root -p030705 SportsStoreDB --no-create-info --skip-triggers --skip-routines --skip-events --complete-insert --default-character-set=utf8mb4 --result-file=/tmp/only_data.sql
+câu lệnh 2: chuyển ra ngoài
+docker cp sportshop_mysql:/tmp/only_data.sql ./only_data.sql
+câu lệnh 3(có thể k cần chạy): xóa trong container cho đỡ nặng
+docker exec sportshop_mysql rm /tmp/only_data.sql
+
+
+lưu ý: chỉ backup data chứ không backup bảng, T-sql, ràng buộc ....

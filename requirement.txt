@@ -1,0 +1,409 @@
+1. Problem Definition
+1.1. Problem Abstraction
+Cuộc sống hiện đại ngày nay gắn liền với sự phát triển mạnh mẽ của công nghệ và ý thức chăm sóc sức khỏe. Con người ngày càng chú trọng đến việc rèn luyện thể thao, giữ gìn vóc dáng và cải thiện tinh thần. Theo đó, nhu cầu mua sắm các sản phẩm thể thao như quần áo, giày dép, phụ kiện tập luyện… ngày càng tăng cao.
+Tuy nhiên, việc tìm kiếm được những sản phẩm thể thao chất lượng, chính hãng, giá hợp lý vẫn còn là một thách thức lớn. Nhiều người tiêu dùng phải di chuyển đến các cửa hàng, trung tâm thương mại hoặc chờ các đợt giảm giá để có thể sở hữu sản phẩm mình mong muốn. Các cửa hàng nhỏ lẻ lại gặp khó khăn trong việc quảng bá sản phẩm và mở rộng thị trường do thiếu nền tảng thương mại điện tử.
+Song song đó, sự phát triển của Internet và xu hướng mua sắm trực tuyến mở ra cơ hội lớn để người tiêu dùng dễ dàng tiếp cận hàng ngàn sản phẩm chỉ với vài cú nhấp chuột. Chính vì vậy, nhóm chúng tôi quyết định xây dựng “Website bán đồ thể thao trực tuyến” – một giải pháp giúp khách hàng có thể dễ dàng mua sắm, so sánh, đặt hàng và thanh toán nhanh chóng mà không cần đến trực tiếp cửa hàng.
+1.2. The Current System
+Với một hệ thống bán hàng chưa ứng dụng công nghệ thông tin, người bán và người mua đều gặp nhiều bất tiện trong quá trình giao dịch:
+a. Về phía khách hàng:
+Khó tìm kiếm được sản phẩm phù hợp với nhu cầu (size, màu sắc, thương hiệu, giá cả).
+Phải đến tận cửa hàng để xem hàng, tốn thời gian và chi phí đi lại.
+Không biết trước sản phẩm còn hàng hay không.
+Không thể so sánh giá, xem đánh giá hoặc nhận tư vấn nhanh chóng.
+b. Về phía cửa hàng:
+Khó khăn trong việc quảng bá, marketing sản phẩm đến đúng khách hàng tiềm năng.
+Quản lý hàng tồn, đơn hàng, thông tin khách hàng hoàn toàn thủ công, dễ sai sót.
+Thiếu công cụ thống kê, phân tích doanh số và hành vi mua sắm.
+Không tận dụng được các kênh thanh toán và vận chuyển hiện đại.
+Với những hạn chế đó, mô hình bán hàng truyền thống không còn đáp ứng được tốc độ và nhu cầu của thị trường hiện nay.
+1.3. The Proposed System
+Để khắc phục những nhược điểm trên, chúng tôi đề xuất xây dựng “Website bán đồ thể thao trực tuyến” với các chức năng và tiện ích nổi bật sau:
+a. Hiển thị sản phẩm trực quan, sinh động:
+Các sản phẩm được phân loại rõ ràng theo danh mục: Giày thể thao, quần áo tập, dụng cụ gym, phụ kiện, thể thao ngoài trời…
+Mỗi sản phẩm hiển thị đầy đủ thông tin: hình ảnh, mô tả chi tiết, giá bán, thương hiệu, size, màu sắc, số lượng tồn, chính sách bảo hành và khuyến mãi.
+b. Chức năng tìm kiếm và lọc nâng cao:
+Khách hàng có thể tìm sản phẩm theo tên, thương hiệu, giá, kích cỡ, giới tính, hoặc môn thể thao (bóng đá, gym, chạy bộ, yoga...).
+c. Chức năng giỏ hàng và thanh toán:
+Cho phép khách hàng thêm sản phẩm vào giỏ, cập nhật số lượng, xem tổng tiền, phí vận chuyển.
+Hỗ trợ các hình thức thanh toán: tiền mặt khi nhận hàng (COD), chuyển khoản ngân hàng hoặc cổng thanh toán điện tử (VNPay, MoMo...).
+d. Quản lý khách hàng:
+Lưu trữ thông tin tài khoản, lịch sử mua hàng, điểm thưởng, mã giảm giá.
+Xác thực thông tin người dùng để đảm bảo việc giao hàng chính xác và bảo mật.
+e. Quản lý đơn hàng:
+Hệ thống cho phép quản trị viên theo dõi, xử lý và cập nhật trạng thái đơn hàng (đang xử lý, đã giao, hoàn tất).
+Tự động gửi thông báo đến khách hàng qua email hoặc tin nhắn.
+f. Phản hồi và đánh giá:
+Khách hàng có thể để lại nhận xét, đánh giá chất lượng sản phẩm, góp ý về dịch vụ.
+Quản trị viên có thể dựa trên phản hồi để cải thiện chất lượng phục vụ.
+g. Tin tức – Khuyến mãi:
+Cập nhật các bài viết liên quan đến thể thao, sức khỏe, xu hướng thời trang thể thao.
+Thông báo chương trình giảm giá, ưu đãi dành cho khách hàng thân thiết.
+Với hệ thống này, người tiêu dùng có thể tiết kiệm thời gian, mua sắm dễ dàng, còn cửa hàng có thể quản lý tập trung, nâng cao doanh số và thương hiệu.
+
+1.4. Boundaries of the System
+a. Hệ thống được thiết kế trong phạm vi:
+Khách hàng mục tiêu: cá nhân yêu thích thể thao, độ tuổi 16–45, sinh viên, nhân viên văn phòng, huấn luyện viên, câu lạc bộ thể thao.
+Đối tượng sử dụng: khách hàng, nhân viên bán hàng, quản trị viên.
+Phạm vi áp dụng: trước mắt áp dụng trong nước, hỗ trợ giao hàng toàn quốc qua các đơn vị vận chuyển phổ biến như Giao Hàng Nhanh, GHTK, Viettel Post…
+b. Giới hạn của hệ thống:
+Website chưa tích hợp ứng dụng di động riêng.
+Thanh toán trực tuyến còn giới hạn ở một số cổng phổ biến.
+Chưa có diễn đàn cộng đồng thể thao để chia sẻ kinh nghiệm tập luyện.
+c. Hướng phát triển tương lai:
+Xây dựng ứng dụng mobile (Android/iOS) để người dùng mua sắm tiện lợi hơn.
+Phát triển diễn đàn hoặc blog cộng đồng thể thao.
+Tích hợp AI gợi ý sản phẩm theo thói quen mua hàng của người dùng.
+Mở rộng thị trường quốc tế, hỗ trợ đơn hàng xuất khẩu nhỏ lẻ (cross-border eCommerce).
+1.5. Hardware and Software Requirements
+1.5.1. Minimum Requirements (Cấu hình tối thiểu)
+
+
+Server
+Client
+Hardware
+* RAM: 2 GB * CPU: 1 Core * Ổ cứng: 30 GB SSD * Kết nối Internet hoặc LAN
+* RAM: 2 GB * CPU: 1.0 GHz * Kết nối Internet hoặc LAN
+Software
+* Hệ điều hành: Linux (Ubuntu 20.04) * Web Server (Nginx, Apache) * Java 11 (OpenJDK) * CSDL: MySQL 12 / SQL Server Express
+* Hệ điều hành: Windows 11, macOS 10.15, Android 10, iOS 14 trở lên * Trình duyệt: Chrome, Firefox, Safari, Edge
+
+
+1.5.2. Recommended Requirements (Cấu hình khuyến nghị)
+
+
+Server
+Client
+Hardware
+* RAM: 4 GB trở lên * CPU: 2 Cores trở lên * Ổ cứng: 60 GB SSD trở lên * Kết nối Internet tốc độ cao
+* RAM: 4 GB trở lên * CPU: 2.0 GHz trở lên * Kết nối Internet băng thông rộng
+Software
+* Hệ điều hành: Linux (Ubuntu 22.04) * Web Server: Nginx * Backend: Java 17+ (Spring Boot) * CSDL: MS SQL Server Standard * Containerization: Docker
+* Hệ điều hành: Windows 11
+ Trình duyệt: Phiên bản mới nhất của Chrome, Firefox, Safari, Edge
+
+
+2. Customer Requirements Specification 
+2.1. Users of the System
+Hệ thống “Website bán đồ thể thao trực tuyến” được thiết kế phục vụ ba nhóm người dùng chính, mỗi nhóm có vai trò và quyền hạn khác nhau trong quá trình sử dụng hệ thống.
+a. Guest (Khách vãng lai)
+Là bất kỳ ai truy cập website mà không đăng nhập. Đây là đối tượng người dùng quan trọng để tối ưu hóa trải nghiệm mua sắm và doanh thu.
+Xem danh mục và thông tin chi tiết sản phẩm.
+Tìm kiếm, lọc và so sánh sản phẩm.
+Thêm sản phẩm vào giỏ hàng.
+Hoàn tất mua hàng mà không cần tạo tài khoản (Guest Checkout).
+Xem tin tức, khuyến mãi.
+Đăng ký tài khoản (tùy chọn).
+b. Member (Thành viên)
+Là người dùng đã đăng ký tài khoản và đăng nhập vào hệ thống.
+Bao gồm tất cả các chức năng của Khách vãng lai.
+Đăng nhập / đăng xuất.
+Quản lý thông tin cá nhân, địa chỉ, mật khẩu.
+Đặt hàng nhanh chóng với thông tin cá nhân đã được lưu sẵn.
+Theo dõi tình trạng và lịch sử các đơn hàng đã mua.
+Gửi bình luận, đánh giá cho các sản phẩm đã mua.
+c. Admin (Người quản trị hệ thống)
+Là người có quyền quản lý toàn bộ hoạt động của website.
+Admin chịu trách nhiệm:
+Quản lý tài khoản người dùng (thành viên và các admin cấp thấp hơn).
+Quản lý sản phẩm, danh mục, thương hiệu, khuyến mãi.
+Quản lý và xử lý đơn hàng.
+Quản lý phản hồi và bình luận của người dùng.
+Theo dõi doanh thu, số lượng đơn hàng, hàng tồn kho.
+Duy trì hoạt động hệ thống, bảo mật dữ liệu, sao lưu định kỳ.
+2.2. System Functions
+Hệ thống gồm ba nhóm chức năng chính, tương ứng với ba loại người dùng ở trên.
+2.2.1. Các chức năng của Khách vãng lai (Guest)
+1. Xem sản phẩm 
+Description
+
+
+Khách hàng có thể xem danh sách và thông tin chi tiết các sản phẩm đang được bày bán.
+Input
+Lựa chọn danh mục sản phẩm (giày, áo, quần, phụ kiện…).
+Chọn sản phẩm cụ thể để xem chi tiết.
+Process
+Truy xuất dữ liệu trong cơ sở dữ liệu.
+Hiển thị các thông tin: tên sản phẩm, giá, thương hiệu, mô tả, size, màu sắc, hình ảnh, đánh giá.
+Output
+Giao diện hiển thị đầy đủ thông tin sản phẩm.
+Gợi ý các sản phẩm tương tự.
+
+
+2. Tìm kiếm sản phẩm
+Description
+Cho phép người dùng tìm kiếm sản phẩm nhanh chóng bằng từ khóa hoặc bộ lọc nâng cao.
+Input
+Từ khóa (tên sản phẩm, thương hiệu, mã SKU).
+Bộ lọc: giá từ–đến, giới tính, môn thể thao, thương hiệu.
+Process
+Hệ thống gửi truy vấn SQL đến CSDL để lọc dữ liệu phù hợp.
+Nếu có kết quả, sắp xếp theo độ liên quan hoặc giá.
+Output
+Danh sách sản phẩm phù hợp với yêu cầu tìm kiếm.
+Hiển thị tổng số kết quả tìm được.
+
+
+3. So sánh sản phẩm
+Description
+Cho phép khách hàng chọn 2–3 sản phẩm để so sánh các thông số kỹ thuật, chất liệu, thương hiệu, giá.
+Input
+Chọn tối đa 3 sản phẩm cần so sánh.
+
+
+Process
+Lấy dữ liệu từ CSDL.
+Tạo bảng so sánh theo thuộc tính (tên, giá, thương hiệu, chất liệu, xuất xứ, số sao đánh giá).
+Output
+Bảng so sánh hiển thị song song giúp khách hàng đưa ra quyết định mua.
+
+
+
+
+4. Thêm vào giỏ hàng
+Description
+Cho phép khách hàng lưu tạm các sản phẩm muốn mua vào một giỏ hàng ảo.
+Input
+Sản phẩm, số lượng, size, màu sắc.
+
+
+Process
+Lưu thông tin giỏ hàng vào Session của trình duyệt. Nếu người dùng sau đó đăng nhập, giỏ hàng này sẽ được hợp nhất vào tài khoản của họ.
+Output
+Hiển thị thông báo “Đã thêm vào giỏ hàng” và cập nhật số lượng trên biểu tượng giỏ hàng.
+
+
+5. Mua hàng không cần tài khoản (Guest Checkout)
+Description
+Chức năng cốt lõi cho phép khách vãng lai hoàn tất đơn hàng chỉ bằng cách cung cấp thông tin nhận hàng, giúp giảm tỷ lệ bỏ giỏ hàng.
+Input
+Dữ liệu giỏ hàng từ Session.
+Thông tin nhập vào form thanh toán: Họ tên, Email, Số điện thoại, Địa chỉ nhận hàng.
+Process
+Hệ thống sẽ kiểm tra tính hợp lệ của thông tin khách hàng cung cấp và xác thực lại số lượng tồn kho của sản phẩm. Sau đó, một bản ghi đơn hàng mới sẽ được tạo trong cơ sở dữ liệu với thông tin khách hàng được lưu trực tiếp và trường user_id được gán là NULL. Cuối cùng, hệ thống sẽ cập nhật lại số lượng sản phẩm trong kho và tự động gửi email xác nhận chi tiết đơn hàng cho khách.
+Output
+Hiển thị trang "Đặt hàng thành công" với mã đơn hàng.
+Một email xác nhận được gửi tới khách hàng.
+
+
+6. Xem tin tức / khuyến mãi
+Description
+Khách hàng có thể xem các bài viết hướng dẫn, tin khuyến mãi, xu hướng thời trang thể thao.
+Input
+Lựa chọn chuyên mục tin tức hoặc bài viết cụ thể.
+Process
+Truy vấn trong CSDL.
+Output
+Hiển thị danh sách hoặc chi tiết bài viết, hình ảnh, ngày đăng.
+
+
+2.2.2. Các chức năng của Thành viên (Member)
+1. Đăng nhập
+Description
+Thành viên đăng nhập bằng tài khoản đã đăng ký để thực hiện các chức năng nâng cao.
+Input
+
+
+Email / Tên đăng nhập và mật khẩu.
+Nhấn nút “Đăng xuất”.
+Process
+
+
+Kiểm tra thông tin hợp lệ.
+So sánh mật khẩu mã hóa với dữ liệu trong CSDL.
+Nếu đúng, tạo session đăng nhập.
+Xóa session và cookie liên quan.
+Output
+Quay về trang chủ hoặc hiển thị thông báo “Đăng xuất thành công”.
+Hiển thị giao diện tài khoản
+Thông báo đăng nhập thành công hoặc lỗi.
+
+
+2. Đăng xuất
+Description
+Thành viên thoát khỏi đăng nhập vào WebSite
+Input
+Nhấn nút “Đăng xuất”.
+Process
+Xóa session và cookie liên quan.
+Output
+Quay về trang chủ hoặc hiển thị thông báo “Đăng xuất thành công”.
+
+
+3. Mua hàng
+Description
+Thành viên có thể đặt mua sản phẩm trong giỏ hàng với quy trình nhanh hơn nhờ thông tin đã được lưu sẵn.
+Input
+
+
+Giỏ hàng, lựa chọn địa chỉ nhận hàng đã lưu (hoặc nhập địa chỉ mới), lựa chọn phương thức thanh toán.
+Process
+
+
+Tương tự "Guest Checkout", nhưng hệ thống sẽ tự động điền các thông tin cá nhân (tên, địa chỉ, SĐT) đã lưu. Bản ghi trong CSDL sẽ có user_id trỏ đến ID của thành viên.
+Output
+Hiển thị hóa đơn đặt hàng và mã đơn hàng.
+
+
+4. Theo dõi đơn hàng
+Description
+Xem lịch sử và trạng thái đơn hàng đã mua.
+Input
+Mã đơn hàng hoặc chọn từ danh sách lịch sử.
+Process
+Truy vấn vào trong CSDL.
+Truy vấn vào trong CSDL.
+Output
+Hiển thị trạng thái đơn hàng (chưa xử lý, đang giao, hoàn tất).
+
+
+5. Gửi phản hồi (Feedback)
+Description
+Gửi góp ý hoặc đánh giá dịch vụ.
+Input
+Tiêu đề, nội dung phản hồi
+Process
+Kiểm tra nội dung.
+Output
+Thông báo “Cảm ơn bạn đã gửi phản hồi”.
+
+
+6. Bình luận / Đánh giá sản phẩm
+Description
+Cho phép thành viên bình luận hoặc chấm điểm sản phẩm đã mua.
+Input
+Nội dung bình luận, số sao đánh giá.
+Process
+Kiểm tra người dùng có đơn hàng hợp lệ, lưu vào Comments.
+Output
+Hiển thị bình luận công khai sau khi duyệt.
+
+
+7. Đổi mật khẩu
+Description
+Thành viên có thể thay đổi mật khẩu để đảm bảo tính bí mật.
+Input
+Mật khẩu cũ, mật khẩu mới, nhập lại mật khẩu mới.
+Process
+Kiểm tra trùng khớp, mã hóa, đúng thì cập nhật vào CSDL
+Output
+Thông báo “Thay đổi thành công”
+
+
+8. Thay đổi thông tin cá nhân
+Description
+Chức năng cho phép thành viên thay đổi thông tin cá nhân: FullName,Age,Gender,Address,Email....
+Input
+Thông tin mới (họ tên, địa chỉ, số điện thoại...).
+Process
+Cập nhật vào trong CSDL.
+Output
+Thông báo cập nhật thành công.
+
+2.2.3. Các chức năng của Quản trị hệ thống (Admin)
+Admin có một số các chức năng của thành viên như:
+Đăng nhập. 
+Đăng xuất. 
+Ngoài ra Quản trị viên còn có các chức năng quản lí sau:
+1.Quản lý sản phẩm
+Description
+Chức năng này cho phép quản trị viên thêm, sửa, xóa các sản phẩm mới cho Website.
+Chức năng cho phép thành viên thay đổi thông tin cá nhân: FullName,Age,Gender,Address,Email....
+Input
+
+
+Thêm, sửa, xóa sản phẩm (tên, giá, mô tả, hình ảnh, thương hiệu).
+Thông tin mới (họ tên, địa chỉ, số điện thoại...).
+Process
+Kiểm tra hợp lệ và lưu thay đổi vào trong CSDL.
+Cập nhật vào trong CSDL.
+Output
+Thông báo thao tác thành công.
+
+
+
+4. Quản lý danh mục / thương hiệu
+Description
+Chức năng này cho phép quản trị viên thêm, chỉnh sửa danh mục và thương hiệu.
+Input
+
+
+Thông tin danh mục mới hoặc chỉnh sửa.
+Thêm, sửa, xóa sản phẩm (tên, giá, mô tả, hình ảnh, thương hiệu).
+Process
+Cập nhật vào trong CSDL
+Kiểm tra hợp lệ và lưu thay đổi vào trong CSDL.
+Output
+Hiển thị danh sách cập nhật.
+Thông báo thao tác thành công.
+
+
+5. Quản lý đơn hàng
+Description
+Chức năng này cho phép quản trị viên theo dõi đơn hàng của thành viên
+Input
+Mã đơn hàng, trạng thái cần cập nhật.
+Process
+Cập nhật trạng thái, ghi lịch sử vào trong CSDL.
+Output
+Hiển thị danh sách đơn đã cập nhật.
+
+
+6. Quản lý thành viên
+Description
+Chức năng này cho phép quản trị viên có thể xem, xoá và cài đặt trạng thái cho tất cả các thành viên của website.
+Input
+Tên tài khoản hoặc ID người dùng.
+Process
+Khoá, xoá, hoặc chỉnh sửa thông tin trong CSDL 
+Output
+Cập nhật danh sách thành viên.
+Hiển thị danh sách đơn đã cập nhật.
+
+
+7. Quản lý bình luận / phản hồi
+Description
+Quản trị viên xem, xóa, đặt trạng thái cho các bình luận của thành viên về các loại sản phẩm có trong website.
+Input
+ID bình luận / phản hồi.
+Process
+Duyệt, ẩn hoặc xoá nội dung.
+Output
+Hiển thị danh sách sau khi xử lý.
+
+
+8. Quản lý khuyến mãi / mã giảm giá
+Description
+Quản trị viên có thể thêm mới, chỉnh sửa, xóa hoặc cập nhật thông tin các chương trình khuyến mãi và mã giảm giá. Hệ thống quản lý thời hạn, điều kiện áp dụng và trạng thái hoạt động của từng mã giảm giá.
+Input
+Mã giảm giá, thời hạn, điều kiện áp dụng.
+Process
+Thêm hoặc cập nhật vào trong CSDL.
+Output
+Hiển thị danh sách khuyến mãi đang hoạt động.
+
+
+9. Quản lý báo cáo thống kê
+Description
+Quản trị viên có thể xem và tạo các báo cáo thống kê theo khoảng thời gian. Hệ thống tổng hợp dữ liệu về doanh thu, số lượng đơn hàng, sản phẩm bán chạy và hoạt động của người dùng để hỗ trợ việc phân tích và ra quyết định.
+Quản trị viên có thể thêm mới, chỉnh sửa, xóa hoặc cập nhật thông tin các chương trình khuyến mãi và mã giảm giá. Hệ thống quản lý thời hạn, điều kiện áp dụng và trạng thái hoạt động của từng mã giảm giá.
+Input
+Khoảng thời gian thống kê (ngày, tháng, quý)
+Process
+Tổng hợp dữ liệu từ CSDL.
+Output
+Báo cáo dạng bảng và biểu đồ (doanh thu, sản phẩm bán chạy).
+Hiển thị danh sách khuyến mãi đang hoạt động.
+
+
+10. Quản lý tồn kho
+Description
+Quản trị viên có thể quản lý việc nhập và xuất hàng hóa trong kho. Hệ thống ghi nhận số lượng sản phẩm, cập nhật tồn kho và theo dõi biến động hàng hóa để đảm bảo dữ liệu chính xác.
+Input
+ID sản phẩm, số lượng nhập/xuất.
+Process
+Cập nhật vào trong CSDL
+Tổng hợp dữ liệu từ Orders, Products, Users..
+Output
+Báo cáo số lượng còn lại theo từng kho.
+Báo cáo dạng bảng và biểu đồ (doanh thu, sản phẩm bán chạy).
+

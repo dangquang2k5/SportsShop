@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: sportshop_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "030705"
+      MYSQL_DATABASE: SportsStoreDB
+
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --skip-character-set-client-handshake
+    ports:
+      - "3340:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/complete_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - sportshop_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p030705" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node.js Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sportshop_backend
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: SportsStoreDB
+      DB_USER: root
+      DB_PASSWORD: "030705"
+      JWT_SECRET: "sportshop-jwt-secret-key-2024-change-in-production"
+      JWT_EXPIRES_IN: "24h"
+      FRONTEND_URL: "http://localhost:8081"
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - sportshop_network
+    restart: unless-stopped
+
+  # PHP Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sportshop_frontend
+    environment:
+      BACKEND_URL: http://backend:3000
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+      - mysql
+    volumes:
+      - ./frontend:/var/www/html
+    networks:
+      - sportshop_network
+    restart: unless-stopped
+
+networks:
+  sportshop_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

@@ -1,0 +1,67 @@
+╔══════════════════════════════════════════════════════════════╗
+║         THÔNG TIN ĐĂNG NHẬP - SPORTSHOP PROJECT             ║
+╚══════════════════════════════════════════════════════════════╝
+
+📱 TÀI KHOẢN ADMIN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Số điện thoại: 0123456789
+  Mật khẩu:      admin123
+  Role:          admin
+  Trang admin:   http://localhost:8081/pages/admin_dashboard.php
+
+📱 TÀI KHOẢN USER (KHÁCH HÀNG)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Số điện thoại: 0987654321
+  Mật khẩu:      admin123
+  Role:          customer
+
+🌐 ĐƯỜNG DẪN QUAN TRỌNG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Trang chủ:     http://localhost:8081/
+  • Đăng nhập:     http://localhost:8081/pages/login.php
+  • Đăng ký:       http://localhost:8081/pages/register.php
+  • Sản phẩm:      http://localhost:8081/pages/products.php
+  • Giỏ hàng:      http://localhost:8081/pages/cart.php
+  • Backend API:   http://localhost:8080/api
+
+⚠️ LƯU Ý QUAN TRỌNG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✓ Hệ thống đăng nhập bằng SỐ ĐIỆN THOẠI (không phải email)
+  ✓ Mật khẩu đã được hash bằng PHP password_hash() với bcrypt
+  ✓ Sau khi đăng nhập admin, sẽ redirect đến admin dashboard
+  ✓ Sau khi đăng nhập user, sẽ redirect đến trang chủ
+
+🔧 CÁC LỖI ĐÃ SỬA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. ✅ Lỗi đăng nhập - Hash mật khẩu không khớp
+     → Đã update hash mới cho cả admin và user
+  
+  2. ✅ Lỗi checkout.php line 51 - Undefined array key "productDetailId"
+     → Đã thêm validation kiểm tra key trước khi sử dụng
+     → Đã sửa PDO::FETCH_KEY_PAIR | FETCH_ASSOC (không hợp lệ)
+  
+  3. ✅ Lỗi product_detail.php - Thiếu header navbar
+     → Đã thêm đầy đủ header với menu và giỏ hàng
+  
+  4. ✅ Lỗi hiển thị số lượng giỏ hàng
+     → JavaScript tự động đếm từ localStorage
+
+🚀 CÁCH KIỂM TRA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. Mở trình duyệt: http://localhost:8081/pages/login.php
+  2. Nhập SĐT: 0123456789
+  3. Nhập mật khẩu: admin123
+  4. Click "Đăng nhập"
+  5. Nếu thành công → Redirect đến admin dashboard
+
+📝 GHI CHÚ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Nếu vẫn không đăng nhập được, chạy lại:
+    Get-Content database/update_passwords.sql | docker exec -i sportshop_mysql mysql -uroot -p030705
+  
+  • Để test password, chạy:
+    docker exec sportshop_frontend php /var/www/html/test_login.php
+
+═══════════════════════════════════════════════════════════════
+           Tất cả đã hoạt động bình thường! ✓
+═══════════════════════════════════════════════════════════════
