@@ -5,6 +5,7 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
 // Get dashboard statistics from API
 try {
     // Get orders for statistics
@@ -60,6 +61,86 @@ try {
 } catch (Exception $e) {
     $statusCounts = [];
 }
+=======
+$db = Database::getInstance()->getConnection();
+
+// Get statistics
+$stmt = $db->query("SELECT COUNT(*) as total FROM Users WHERE Status = 1");
+$totalUsers = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Product");
+$totalProducts = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Orders");
+$totalOrders = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT SUM(TotalAmount) as revenue FROM Orders WHERE Status IN ('delivered', 'shipped')");
+$totalRevenue = $stmt->fetch()['revenue'] ?? 0;
+
+// Get recent orders
+$stmt = $db->prepare("
+    SELECT o.*, 
+           COALESCE(CONCAT(u.FirstName, ' ', u.LastName), o.GuestName, 'Khách vãng lai') as FullName,
+           COALESCE(u.Email, o.GuestEmail) as Email
+    FROM Orders o
+    LEFT JOIN Users u ON o.UserID = u.UserID
+    ORDER BY o.created_at DESC
+    LIMIT 8
+");
+$stmt->execute();
+$recentOrders = $stmt->fetchAll();
+
+// Get low stock products
+$stmt = $db->prepare("
+    SELECT p.ProductID, p.ProductName, p.MainImage, SUM(pd.Quantity) as TotalStock
+    FROM Product p
+    LEFT JOIN ProductDetail pd ON p.ProductID = pd.ProductID
+    GROUP BY p.ProductID
+    HAVING TotalStock < 10 OR TotalStock IS NULL
+    ORDER BY TotalStock ASC
+    LIMIT 5
+");
+$stmt->execute();
+$lowStockProducts = $stmt->fetchAll();
+
+// Get order status distribution for pie chart
+$stmt = $db->query("
+    SELECT Status, COUNT(*) as count 
+    FROM Orders 
+    GROUP BY Status
+");
+$orderStatusData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get top selling products for pie chart
+$stmt = $db->prepare("
+    SELECT p.ProductName, SUM(od.Quantity) as total_sold
+    FROM OrderDetails od
+    JOIN ProductDetail pd ON od.ProductDetailID = pd.ProductDetailID
+    JOIN Product p ON pd.ProductID = p.ProductID
+    JOIN Orders o ON od.OrderID = o.OrderID
+    WHERE o.Status IN ('delivered', 'shipped')
+    GROUP BY p.ProductID
+    ORDER BY total_sold DESC
+    LIMIT 5
+");
+$stmt->execute();
+$topProductsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get revenue by category for pie chart
+$stmt = $db->query("
+    SELECT c.CategoryName, SUM(od.Price * od.Quantity) as revenue
+    FROM OrderDetails od
+    JOIN ProductDetail pd ON od.ProductDetailID = pd.ProductDetailID
+    JOIN Product p ON pd.ProductID = p.ProductID
+    JOIN Categories c ON p.CategoryID = c.CategoryID
+    JOIN Orders o ON od.OrderID = o.OrderID
+    WHERE o.Status IN ('delivered', 'shipped')
+    GROUP BY c.CategoryID
+    ORDER BY revenue DESC
+    LIMIT 6
+");
+$categoryRevenueData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 $pageTitle = "Admin Dashboard";
 $isInPages = true;

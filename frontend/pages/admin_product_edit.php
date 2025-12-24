@@ -5,6 +5,11 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
+=======
+$db = Database::getInstance()->getConnection();
+
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 // Kiểm tra xem đây là mode Thêm hay Sửa
 $editID = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $isEditMode = ($editID > 0);
@@ -19,20 +24,32 @@ $product = [
 $pageTitle = 'Thêm sản phẩm mới';
 
 // Lấy danh mục và thương hiệu cho dropdown
+<<<<<<< HEAD
 $categoriesResponse = makeApiRequest('/categories');
 $categories = $categoriesResponse['success'] ? $categoriesResponse['data'] ?? [] : [];
 
 $brandsResponse = makeApiRequest('/brands');
 $brands = $brandsResponse['success'] ? $brandsResponse['data'] ?? [] : [];
+=======
+$categories = $db->query("SELECT * FROM Categories ORDER BY CategoryName")->fetchAll();
+$brands = $db->query("SELECT * FROM Brand ORDER BY BrandName")->fetchAll();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 // Nếu là mode Sửa, tải dữ liệu sản phẩm
 if ($isEditMode) {
     $pageTitle = 'Sửa sản phẩm';
+<<<<<<< HEAD
     $productResponse = makeApiRequest('/products/' . $editID);
     
     if ($productResponse['success']) {
         $product = $productResponse['data'] ?? $product;
     } else {
+=======
+    $stmt = $db->prepare("SELECT * FROM Product WHERE ProductID = ?");
+    $stmt->execute([$editID]);
+    $product = $stmt->fetch();
+    if (!$product) {
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
         redirect('admin_products.php?message=Không tìm thấy sản phẩm');
     }
 }
@@ -45,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['Description']);
     $categoryID = (int)$_POST['CategoryID'];
     $brandID = (int)$_POST['BrandID'];
+<<<<<<< HEAD
     
     $productData = [
         'productName' => $productName,
@@ -67,16 +85,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($response['success']) {
         redirect('admin_products.php?message=' . urlencode($message));
+=======
+
+    try {
+        if ($isEditMode) {
+            // Logic UPDATE
+            $stmt = $db->prepare("
+                UPDATE Product 
+                SET ProductName = ?, Price = ?, MainImage = ?, Description = ?, CategoryID = ?, BrandID = ?
+                WHERE ProductID = ?
+            ");
+            $stmt->execute([$productName, $price, $mainImage, $description, $categoryID, $brandID, $editID]);
+            $productID = $editID;
+            $message = 'Đã cập nhật sản phẩm!';
+        } else {
+            // Logic INSERT
+            $stmt = $db->prepare("
+                INSERT INTO Product (ProductName, Price, MainImage, Description, CategoryID, BrandID)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([$productName, $price, $mainImage, $description, $categoryID, $brandID]);
+            $productID = $db->lastInsertId();
+            $message = 'Đã thêm sản phẩm mới!';
+        }
+        
+        // Handle product variants (Size, Color, Quantity)
+        if (isset($_POST['variants']) && is_array($_POST['variants'])) {
+            foreach ($_POST['variants'] as $variant) {
+                $size = trim($variant['size']);
+                $color = trim($variant['color']);
+                $quantity = (int)$variant['quantity'];
+                
+                if (!empty($size) && !empty($color) && $quantity > 0) {
+                    // Check if variant already exists
+                    $checkStmt = $db->prepare("
+                        SELECT ProductDetailID FROM ProductDetail 
+                        WHERE ProductID = ? AND Size = ? AND Color = ?
+                    ");
+                    $checkStmt->execute([$productID, $size, $color]);
+                    $existingVariant = $checkStmt->fetch();
+                    
+                    if ($existingVariant) {
+                        // Update existing variant
+                        $updateStmt = $db->prepare("
+                            UPDATE ProductDetail 
+                            SET Quantity = ? 
+                            WHERE ProductDetailID = ?
+                        ");
+                        $updateStmt->execute([$quantity, $existingVariant['ProductDetailID']]);
+                    } else {
+                        // Insert new variant
+                        $insertStmt = $db->prepare("
+                            INSERT INTO ProductDetail (ProductID, Size, Color, Quantity)
+                            VALUES (?, ?, ?, ?)
+                        ");
+                        $insertStmt->execute([$productID, $size, $color, $quantity]);
+                    }
+                }
+            }
+        }
+        
+        header('Location: admin_products.php?message=' . urlencode($message));
+        exit;
+    } catch (PDOException $e) {
+        $error = 'Lỗi CSDL: ' . $e->getMessage();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     }
 }
 
 // Get existing variants if in edit mode
 $existingVariants = [];
 if ($isEditMode) {
+<<<<<<< HEAD
     $variantsResponse = makeApiRequest('/products/' . $editID . '/variants');
     if ($variantsResponse['success']) {
         $existingVariants = $variantsResponse['data']['variants'] ?? [];
     }
+=======
+    $stmt = $db->prepare("SELECT * FROM ProductDetail WHERE ProductID = ? ORDER BY Size, Color");
+    $stmt->execute([$editID]);
+    $existingVariants = $stmt->fetchAll();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 }
 ?>
 <!DOCTYPE html>

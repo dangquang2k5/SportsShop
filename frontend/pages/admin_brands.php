@@ -5,16 +5,25 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
 $message = '';
+=======
+$db = Database::getInstance()->getConnection();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 // Handle brand actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
+<<<<<<< HEAD
+=======
+    // SỬA 1: Dùng tên cột PascalCase
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     if ($action === 'add') {
         $brandName = trim($_POST['BrandName']);
         $description = trim($_POST['BrandDescription']);
         
+<<<<<<< HEAD
         // Use backend API to add brand
         $response = makeApiRequest('/brands', 'POST', [
             'brandName' => $brandName,
@@ -55,18 +64,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $message = 'Lỗi: ' . ($response['message'] ?? 'Không thể xóa thương hiệu');
         }
+=======
+        // SỬA 2: Sửa tên Bảng và Cột. Xóa 'country_origin'.
+        $stmt = $db->prepare("INSERT INTO Brand (BrandName, BrandDescription) VALUES (?, ?)");
+        $stmt->execute([$brandName, $description]);
+        $message = 'Đã thêm thương hiệu mới';
+
+    } elseif ($action === 'edit') {
+        $brandId = (int)$_POST['BrandID']; // Sửa 'brand_id'
+        $brandName = trim($_POST['BrandName']);
+        $description = trim($_POST['BrandDescription']);
+        
+        // SỬA 3: Sửa tên Bảng và Cột. Xóa 'country_origin'.
+        $stmt = $db->prepare("UPDATE Brand SET BrandName = ?, BrandDescription = ? WHERE BrandID = ?");
+        $stmt->execute([$brandName, $description, $brandId]);
+        $message = 'Đã cập nhật thương hiệu';
+
+    } elseif ($action === 'delete') {
+        $brandId = (int)$_POST['BrandID']; // Sửa 'brand_id'
+        
+        // SỬA 4: Sửa tên Bảng và Cột.
+        $stmt = $db->prepare("DELETE FROM Brand WHERE BrandID = ?");
+        $stmt->execute([$brandId]);
+        $message = 'Đã xóa thương hiệu';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     }
     
     header('Location: admin_brands.php?message=' . urlencode($message));
     exit;
 }
 
+<<<<<<< HEAD
 // Get brands from API
 $brandsResponse = makeApiRequest('/brands');
 $brands = $brandsResponse['success'] ? $brandsResponse['data'] ?? [] : [];
 
 // Set default statistics since we don't have brands count endpoint
 $totalBrands = count($brands);
+=======
+// SỬA 5: Sửa tên Bảng và Cột.
+$stmt = $db->query("SELECT * FROM Brand ORDER BY BrandName");
+$brands = $stmt->fetchAll();
+
+// SỬA 6: Sửa tên Bảng.
+$stmt = $db->query("SELECT COUNT(*) as total FROM Brand");
+$totalBrands = $stmt->fetch()['total'];
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 $pageTitle = "Quản lý thương hiệu";
 $isInPages = true;

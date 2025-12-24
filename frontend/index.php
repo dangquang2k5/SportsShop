@@ -2,11 +2,33 @@
 header('Content-Type: text/html; charset=UTF-8');
 require_once 'config.php';
 
+<<<<<<< HEAD
 // Lấy sản phẩm nổi bật từ API
 $featuredProducts = getFeaturedProducts(8);
 
 // Lấy danh mục từ API
 $categories = getAllCategories();
+=======
+$db = Database::getInstance()->getConnection();
+
+// Truy vấn sản phẩm nổi bật
+$stmt = $db->prepare("
+    SELECT p.*, b.BrandName, c.CategoryName 
+    FROM Product p
+    LEFT JOIN Brand b ON p.BrandID = b.BrandID
+    LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
+    WHERE p.Status = 'active'
+    ORDER BY p.RatingAvg DESC
+    LIMIT 8
+");
+$stmt->execute();
+$featuredProducts = $stmt->fetchAll();
+
+// Truy vấn danh mục
+$stmt = $db->prepare("SELECT * FROM Categories ORDER BY CategoryName");
+$stmt->execute();
+$categories = $stmt->fetchAll();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 $pageTitle = "Trang chủ";
 $isInPages = false;

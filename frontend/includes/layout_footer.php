@@ -35,7 +35,11 @@
                 <div class="space-y-4 animate-fade-in" style="animation-delay: 0.1s;">
                     <h3 class="text-lg font-bold text-sport-neon">Liên kết nhanh</h3>
                     <ul class="space-y-2">
+<<<<<<< HEAD
                         <li><a href="https://web.facebook.com/groups/L4D2VN/posts/4136723749908744/?_rdc=1&_rdr#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Về chúng tôi</a></li>
+=======
+                        <li><a href="#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Về chúng tôi</a></li>
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
                         <li><a href="#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Sản phẩm</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Tin tức</a></li>
                         <li><a href="#" class="text-gray-300 hover:text-sport-neon hover:translate-x-2 inline-block transition-all duration-300"><i class="fas fa-angle-right mr-2"></i>Liên hệ</a></li>
@@ -315,6 +319,7 @@
         // Initial call
         updateSidebarPosition();
     </script>
+<<<<<<< HEAD
 <?php
 // --- PHẦN LOGIC PHP ---
 if (session_status() === PHP_SESSION_NONE) {
@@ -658,3 +663,7 @@ if (isset($_SESSION['Role'])) {
 
 <?php endif; ?>
 
+=======
+</body>
+</html>
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345

@@ -5,15 +5,24 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
 $message = '';
 
 // Handle order status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+=======
+$db = Database::getInstance()->getConnection();
+
+// Handle order status update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    // SỬA 1: Dùng tên cột PascalCase
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     $orderId = (int)$_POST['OrderID'];
     $action = $_POST['action'];
     
     if ($action === 'update_status') {
         $newStatus = $_POST['new_status'];
+<<<<<<< HEAD
         // Use backend API to update order status
         $response = makeApiRequest('/orders/' . $orderId . '/status', 'PUT', [
             'status' => $newStatus
@@ -33,20 +42,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         } else {
             $message = 'Lỗi: ' . ($response['message'] ?? 'Không thể xóa đơn hàng');
         }
+=======
+        // SỬA 2: Sửa tên cột (Trigger hoàn kho sẽ tự chạy nếu $newStatus == 'canceled')
+        $stmt = $db->prepare("UPDATE Orders SET Status = ? WHERE OrderID = ?");
+        $stmt->execute([$newStatus, $orderId]);
+        $message = 'Đã cập nhật trạng thái đơn hàng';
+    } elseif ($action === 'delete') {
+        $stmt = $db->prepare("DELETE FROM Orders WHERE OrderID = ?");
+        $stmt->execute([$orderId]);
+        $message = 'Đã xóa đơn hàng';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     }
     
     header('Location: admin_orders.php?message=' . urlencode($message));
     exit;
 }
 
+<<<<<<< HEAD
 // Get orders from API
 $ordersResponse = makeApiRequest('/orders');
 $orders = $ordersResponse['success'] ? $ordersResponse['data']['orders'] ?? [] : [];
 
+=======
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 // Get filter parameters
 $statusFilter = $_GET['status'] ?? 'all';
 $searchQuery = $_GET['search'] ?? '';
 
+<<<<<<< HEAD
 // Calculate statistics from orders data
 $totalOrders = count($orders);
 $pendingOrders = count(array_filter($orders, function($order) { return $order['Status'] === 'pending'; }));
@@ -60,6 +83,55 @@ foreach ($orders as $order) {
     }
 }
 
+=======
+// SỬA 3: Viết lại câu JOIN và WHERE
+$sql = "
+    SELECT o.*, u.FirstName, u.LastName, u.Email, u.Phone
+    FROM Orders o
+    LEFT JOIN Users u ON o.UserID = u.UserID
+    WHERE 1=1
+";
+$params = [];
+
+if ($statusFilter !== 'all') {
+    $sql .= " AND o.Status = ?"; // Sửa tên cột
+    $params[] = $statusFilter;
+}
+
+if (!empty($searchQuery)) {
+    // SỬA 4: Sửa logic tìm kiếm (xóa guest_name, guest_email)
+    $sql .= " AND (o.OrderID LIKE ? OR CONCAT(u.FirstName, ' ', u.LastName) LIKE ? OR u.Email LIKE ? OR u.Phone LIKE ? OR o.Address LIKE ?)";
+    $searchParam = "%$searchQuery%";
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+}
+
+$sql .= " ORDER BY o.created_at DESC"; // Sửa tên cột
+
+$stmt = $db->prepare($sql);
+$stmt->execute($params);
+$orders = $stmt->fetchAll();
+
+// SỬA 5: Sửa các truy vấn thống kê
+$stmt = $db->query("SELECT COUNT(*) as total FROM Orders");
+$totalOrders = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Orders WHERE Status = 'pending'");
+$pendingOrders = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Orders WHERE Status = 'processing'");
+$processingOrders = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Orders WHERE Status = 'delivered'");
+$deliveredOrders = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT SUM(TotalAmount) as revenue FROM Orders WHERE Status IN ('delivered', 'shipped')");
+$totalRevenue = $stmt->fetch()['revenue'] ?? 0;
+
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 $pageTitle = "Quản lý đơn hàng";
 $isInPages = true;
 include '../includes/layout_header.php';

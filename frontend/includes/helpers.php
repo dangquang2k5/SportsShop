@@ -9,6 +9,7 @@
 // ============================================
 
 /**
+<<<<<<< HEAD
  * Lấy kết nối database - Legacy function for compatibility
  * Now uses API calls instead of direct database
  */
@@ -16,6 +17,12 @@ function getDatabase() {
     // This function is kept for backward compatibility but returns null
     // All database operations should use API calls
     return null;
+=======
+ * Lấy kết nối database
+ */
+function getDatabase() {
+    return Database::getInstance()->getConnection();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 }
 
 // ============================================

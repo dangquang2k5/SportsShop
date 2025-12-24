@@ -5,7 +5,11 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
 $message = '';
+=======
+$db = Database::getInstance()->getConnection();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 // Handle user actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -13,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
     
     if ($action === 'update_status') {
+<<<<<<< HEAD
         $newStatus = (int)$_POST['new_status'];
         // Use backend API to update user status
         $response = makeApiRequest('/users/' . $userId . '/status', 'PUT', [
@@ -46,6 +51,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             } else {
                 $message = 'Lỗi: ' . ($response['message'] ?? 'Không thể xóa người dùng');
             }
+=======
+        $newStatus = (int)$_POST['new_status']; // Ép kiểu thành 0 hoặc 1
+        $stmt = $db->prepare("UPDATE Users SET Status = ? WHERE UserID = ?"); // Sửa tên cột 'Status'
+        $stmt->execute([$newStatus, $userId]);
+        $message = 'Đã cập nhật trạng thái người dùng';
+    } elseif ($action === 'update_role') {
+        $newRole = $_POST['new_role'];
+        $stmt = $db->prepare("UPDATE Users SET Role = ? WHERE UserID = ?");
+        $stmt->execute([$newRole, $userId]);
+        $message = 'Đã cập nhật vai trò người dùng';
+    } elseif ($action === 'delete') {
+        if ($userId != $_SESSION['user_id']) {
+            $stmt = $db->prepare("DELETE FROM Users WHERE UserID = ?");
+            $stmt->execute([$userId]);
+            $message = 'Đã xóa người dùng';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
         } else {
             $message = 'Không thể xóa tài khoản của chính bạn';
         }
@@ -55,19 +76,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit;
 }
 
+<<<<<<< HEAD
 // Get users from API (simplified - would need users endpoint)
 $users = []; // This would need a users API endpoint
 
+=======
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 // Get filter parameters
 $roleFilter = $_GET['role'] ?? 'all';
 $statusFilter = $_GET['status'] ?? 'all';
 $searchQuery = $_GET['search'] ?? '';
 
+<<<<<<< HEAD
 // Set default statistics since we don't have users API yet
 $totalUsers = 0;
 $adminUsers = 0;
 $memberUsers = 0;
 $activeUsers = 0;
+=======
+// Build query
+$sql = "SELECT * FROM Users WHERE 1=1";
+$params = [];
+
+if ($roleFilter !== 'all') {
+    $sql .= " AND Role = ?";
+    $params[] = $roleFilter;
+}
+
+if ($statusFilter !== 'all') {
+    $sql .= " AND Status = ?"; // Sửa tên cột 'Status'
+    $params[] = (int)$statusFilter; // Lọc theo 1 hoặc 0
+}
+
+if (!empty($searchQuery)) {
+    $sql .= " AND (CONCAT(FirstName, ' ', LastName) LIKE ? OR Email LIKE ? OR Phone LIKE ?)";
+    $searchParam = "%$searchQuery%";
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+}
+
+$sql .= " ORDER BY UserID DESC";
+
+$stmt = $db->prepare($sql);
+$stmt->execute($params);
+$users = $stmt->fetchAll();
+
+// Get statistics
+$stmt = $db->query("SELECT COUNT(*) as total FROM Users");
+$totalUsers = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Users WHERE Role = 'admin'");
+$adminUsers = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Users WHERE Role = 'customer'");
+$memberUsers = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Users WHERE Status = 1");
+$activeUsers = $stmt->fetch()['total'];
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 $pageTitle = "Quản lý người dùng";
 $isInPages = true;

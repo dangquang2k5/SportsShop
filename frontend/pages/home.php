@@ -1,8 +1,27 @@
 <?php
+<<<<<<< HEAD
 require_once '../config.php';
 
 // Get featured products from API
 $featuredProducts = getFeaturedProducts(8);
+=======
+// SỬA 1: Thêm kết nối CSDL và truy vấn SQL mới
+require_once '../config.php'; // Giả định config.php ở thư mục gốc
+
+$db = Database::getInstance()->getConnection();
+
+// SỬA 2: Xóa getProducts(), thay bằng truy vấn SQL đúng
+$stmt = $db->prepare("
+    SELECT p.*, b.BrandName 
+    FROM Product p
+    LEFT JOIN Brand b ON p.BrandID = b.BrandID
+    WHERE p.Status = 'active'
+    ORDER BY p.RatingAvg DESC
+    LIMIT 8
+");
+$stmt->execute();
+$featuredProducts = $stmt->fetchAll();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 ?>
 
 <section class="hero-section text-center">

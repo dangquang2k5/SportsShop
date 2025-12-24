@@ -5,14 +5,23 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
 $message = '';
 
 // Handle review status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+=======
+$db = Database::getInstance()->getConnection();
+
+// Handle review status update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    // SỬA 1: Dùng tên cột PascalCase
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     $reviewId = (int)$_POST['ReviewID'];
     $action = $_POST['action'];
     
     if ($action === 'approve') {
+<<<<<<< HEAD
         // Use backend API to approve review
         $response = makeApiRequest('/reviews/' . $reviewId . '/status', 'PUT', [
             'status' => 'approved'
@@ -43,25 +52,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         } else {
             $message = 'Lỗi: ' . ($response['message'] ?? 'Không thể xóa bình luận');
         }
+=======
+        $stmt = $db->prepare("UPDATE Reviews SET Status = 'approved' WHERE ReviewID = ?");
+        $stmt->execute([$reviewId]);
+        $message = 'Đã duyệt bình luận';
+    } elseif ($action === 'hide') {
+        $stmt = $db->prepare("UPDATE Reviews SET Status = 'hidden' WHERE ReviewID = ?");
+        $stmt->execute([$reviewId]);
+        $message = 'Đã ẩn bình luận';
+    } elseif ($action === 'delete') {
+        $stmt = $db->prepare("DELETE FROM Reviews WHERE ReviewID = ?");
+        $stmt->execute([$reviewId]);
+        $message = 'Đã xóa bình luận';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     }
     
     header('Location: admin_reviews.php?message=' . urlencode($message));
     exit;
 }
 
+<<<<<<< HEAD
 // Get reviews from API
 $reviewsResponse = makeApiRequest('/reviews');
 $reviews = $reviewsResponse['success'] ? $reviewsResponse['data']['reviews'] ?? [] : [];
 
+=======
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 // Get filter parameters
 $statusFilter = $_GET['status'] ?? 'all';
 $searchQuery = $_GET['search'] ?? '';
 
+<<<<<<< HEAD
 // Calculate statistics from reviews data
 $totalReviews = count($reviews);
 $pendingReviews = count(array_filter($reviews, function($review) { return $review['Status'] === 'pending'; }));
 $approvedReviews = count(array_filter($reviews, function($review) { return $review['Status'] === 'approved'; }));
 $hiddenReviews = count(array_filter($reviews, function($review) { return $review['Status'] === 'hidden'; }));
+=======
+// SỬA 2: Viết lại câu JOIN và tên cột
+$sql = "
+    SELECT r.*, CONCAT(u.FirstName, ' ', u.LastName) as FullName, u.Email, p.ProductName, p.MainImage
+    FROM Reviews r
+    JOIN Users u ON r.UserID = u.UserID
+    JOIN Product p ON r.ProductID = p.ProductID
+    WHERE 1=1
+";
+
+$params = [];
+
+if ($statusFilter !== 'all') {
+    $sql .= " AND r.Status = ?";
+    $params[] = $statusFilter;
+}
+
+if (!empty($searchQuery)) {
+    // SỬA 3: Cập nhật logic tìm kiếm
+    $sql .= " AND (CONCAT(u.FirstName, ' ', u.LastName) LIKE ? OR p.ProductName LIKE ? OR r.Content LIKE ?)";
+    $searchParam = "%$searchQuery%";
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+}
+
+$sql .= " ORDER BY r.created_at DESC";
+
+$stmt = $db->prepare($sql);
+$stmt->execute($params);
+$reviews = $stmt->fetchAll();
+
+// SỬA 4: Sửa các truy vấn thống kê
+$stmt = $db->query("SELECT COUNT(*) as total FROM Reviews");
+$totalReviews = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Reviews WHERE Status = 'pending'");
+$pendingReviews = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Reviews WHERE Status = 'approved'");
+$approvedReviews = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Reviews WHERE Status = 'hidden'");
+$hiddenReviews = $stmt->fetch()['total'];
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 ?>
 <!DOCTYPE html>
 <html lang="vi">

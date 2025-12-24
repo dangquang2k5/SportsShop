@@ -1,0 +1,9 @@
+com\sportsshop\entity\User.class
+com\sportsshop\entity\Product.class
+com\sportsshop\entity\OrderItem.class
+com\sportsshop\entity\User$UserRole.class
+com\sportsshop\entity\Review.class
+com\sportsshop\repository\UserRepository.class
+com\sportsshop\entity\Order.class
+com\sportsshop\entity\Order$OrderStatus.class
+com\sportsshop\entity\Order$PaymentMethod.class

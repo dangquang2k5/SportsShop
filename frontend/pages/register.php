@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($password) < 6) {
         $error = 'Mật khẩu phải có ít nhất 6 ký tự';
     } else {
+<<<<<<< HEAD
         // Use backend API for registration
         $response = makeApiRequest('/auth/register', 'POST', [
             'firstName' => $firstName,
@@ -35,6 +36,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = 'Đăng ký thành công! Vui lòng đăng nhập.';
         } else {
             $error = $response['message'] ?? 'Có lỗi xảy ra trong quá trình đăng ký';
+=======
+        $db = Database::getInstance()->getConnection();
+        
+        $stmt = $db->prepare("SELECT UserID FROM Users WHERE Email = ?");
+        $stmt->execute([$email]);
+        if ($stmt->fetch()) {
+            $error = 'Email đã được sử dụng';
+        } else {
+            $stmt = $db->prepare("SELECT UserID FROM Users WHERE Phone = ?");
+            $stmt->execute([$phone]);
+            if ($stmt->fetch()) {
+                $error = 'Số điện thoại đã được sử dụng';
+            } else {
+                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+                
+                try {
+                    $stmt = $db->prepare("
+                        INSERT INTO Users (FirstName, LastName, Email, Phone, Password, Address, Role) 
+                        VALUES (?, ?, ?, ?, ?, ?, 'customer')
+                    ");
+                    
+                    if ($stmt->execute([$firstName, $lastName, $email, $phone, $passwordHash, $address])) {
+                        $success = 'Đăng ký thành công! Vui lòng đăng nhập.';
+                    } else {
+                        $errorInfo = $stmt->errorInfo();
+                        $error = 'Có lỗi xảy ra: ' . $errorInfo[2];
+                    }
+                } catch (PDOException $e) {
+                    $error = 'Có lỗi xảy ra: ' . $e->getMessage();
+                }
+            }
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
         }
     }
 }

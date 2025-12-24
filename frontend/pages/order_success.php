@@ -9,6 +9,7 @@ if (!$orderId) {
     exit;
 }
 
+<<<<<<< HEAD
 // Use backend API to get order details
 $response = makeApiRequest('/orders/' . $orderId);
 
@@ -19,14 +20,47 @@ if (!$response['success']) {
 
 $order = $response['data']['order'] ?? null;
 $orderItems = $response['data']['items'] ?? [];
+=======
+$db = Database::getInstance()->getConnection();
+
+// SỬA 1: Sửa truy vấn "Đơn hàng"
+$stmt = $db->prepare("
+    SELECT o.*, COUNT(od.OrderDetailID) as item_count,
+           u.FirstName, u.LastName, u.Email, u.Phone
+    FROM Orders o
+    LEFT JOIN OrderDetails od ON o.OrderID = od.OrderID
+    LEFT JOIN Users u ON o.UserID = u.UserID
+    WHERE o.OrderID = ?
+    GROUP BY o.OrderID
+");
+$stmt->execute([$orderId]);
+$order = $stmt->fetch();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 if (!$order) {
     header('Location: ../index.php');
     exit;
 }
 
+<<<<<<< HEAD
 // Get recipient info from order data
 $recipientName = $order['UserID'] ? ($order['FirstName'] . ' ' . $order['LastName']) : ($order['GuestName'] ?? 'Khách hàng');
+=======
+// SỬA 2: Sửa truy vấn "Chi tiết đơn hàng" (JOIN 4 bảng)
+$stmt = $db->prepare("
+    SELECT od.*, p.ProductName, p.MainImage, b.BrandName, pd.Size, pd.Color
+    FROM OrderDetails od
+    JOIN ProductDetail pd ON od.ProductDetailID = pd.ProductDetailID
+    JOIN Product p ON pd.ProductID = p.ProductID
+    LEFT JOIN Brand b ON p.BrandID = b.BrandID
+    WHERE od.OrderID = ?
+");
+$stmt->execute([$orderId]);
+$orderItems = $stmt->fetchAll();
+
+// SỬA 3: Xác định thông tin người nhận
+$recipientName = $order['UserID'] ? ($order['FirstName'] . ' ' . $order['LastName']) : $order['GuestName'];
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 $recipientPhone = $order['UserID'] ? $order['Phone'] : $order['GuestPhone'];
 $recipientEmail = $order['UserID'] ? $order['Email'] : $order['GuestEmail'];
 ?>

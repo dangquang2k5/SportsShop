@@ -5,6 +5,10 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
+=======
+$db = Database::getInstance()->getConnection();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 $message = '';
 $messageType = 'success';
 
@@ -21,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception('Tên danh mục không được để trống');
             }
             
+<<<<<<< HEAD
             // Use backend API to add category
             $response = makeApiRequest('/categories', 'POST', [
                 'categoryName' => $categoryName,
@@ -32,6 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 throw new Exception($response['message'] ?? 'Không thể thêm danh mục');
             }
+=======
+            $stmt = $db->prepare("INSERT INTO Categories (CategoryName, CategoryDescription) VALUES (?, ?)");
+            $stmt->execute([$categoryName, $description]);
+            $message = 'Thêm danh mục thành công!';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
         } elseif ($action === 'edit') {
             $categoryId = (int)$_POST['CategoryID'];
@@ -42,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception('Tên danh mục không được để trống');
             }
             
+<<<<<<< HEAD
             // Use backend API to update category
             $response = makeApiRequest('/categories/' . $categoryId, 'PUT', [
                 'categoryName' => $categoryName,
@@ -53,10 +64,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 throw new Exception($response['message'] ?? 'Không thể cập nhật danh mục');
             }
+=======
+            $stmt = $db->prepare("UPDATE Categories SET CategoryName = ?, CategoryDescription = ? WHERE CategoryID = ?");
+            $stmt->execute([$categoryName, $description, $categoryId]);
+            $message = 'Cập nhật danh mục thành công!';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
         } elseif ($action === 'delete') {
             $categoryId = (int)$_POST['CategoryID'];
             
+<<<<<<< HEAD
             // Use backend API to delete category
             $response = makeApiRequest('/categories/' . $categoryId, 'DELETE');
             
@@ -65,6 +82,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 throw new Exception($response['message'] ?? 'Không thể xóa danh mục');
             }
+=======
+            // Check if category has products
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM Product WHERE CategoryID = ?");
+            $stmt->execute([$categoryId]);
+            $count = $stmt->fetch()['count'];
+            
+            if ($count > 0) {
+                throw new Exception('Không thể xóa danh mục đang có sản phẩm!');
+            }
+            
+            $stmt = $db->prepare("DELETE FROM Categories WHERE CategoryID = ?");
+            $stmt->execute([$categoryId]);
+            $message = 'Xóa danh mục thành công!';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
         }
         
         // Redirect to avoid form resubmission
@@ -78,9 +109,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+<<<<<<< HEAD
 // Get categories from API
 $categoriesResponse = makeApiRequest('/categories');
 $categories = $categoriesResponse['success'] ? $categoriesResponse['data'] ?? [] : [];
+=======
+// Get all categories
+$stmt = $db->query("SELECT c.*, COUNT(p.ProductID) as ProductCount 
+                    FROM Categories c 
+                    LEFT JOIN Product p ON c.CategoryID = p.CategoryID 
+                    GROUP BY c.CategoryID 
+                    ORDER BY c.CategoryName");
+$categories = $stmt->fetchAll();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 $pageTitle = "Quản lý Danh mục";
 $isInPages = true;

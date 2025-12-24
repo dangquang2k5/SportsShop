@@ -18,10 +18,16 @@ if (!file_exists($reportsDir) || !is_writable($reportsDir)) {
     die('Error: Unable to create reports directory. Please check permissions.');
 }
 
+<<<<<<< HEAD
+=======
+$db = Database::getInstance()->getConnection();
+
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 // ===========================
 // COLLECT ALL STATISTICS DATA
 // ===========================
 
+<<<<<<< HEAD
 // 1. Basic Statistics (using API data)
 $ordersResponse = makeApiRequest('/orders');
 $orders = $ordersResponse['success'] ? $ordersResponse['data']['orders'] ?? [] : [];
@@ -100,6 +106,146 @@ $topCustomers = [];
 
 // 10. Monthly Revenue (Last 6 months) - simplified
 $monthlyRevenue = [];
+=======
+// 1. Basic Statistics
+$stmt = $db->query("SELECT COUNT(*) as total FROM Users WHERE Status = 1");
+$totalUsers = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Product");
+$totalProducts = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Categories");
+$totalCategories = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Brand");
+$totalBrands = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Orders");
+$totalOrders = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT SUM(TotalAmount) as revenue FROM Orders WHERE Status IN ('delivered', 'shipped')");
+$totalRevenue = $stmt->fetch()['revenue'] ?? 0;
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Reviews");
+$totalReviews = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT AVG(Rating) as avg FROM Reviews");
+$avgRating = round($stmt->fetch()['avg'] ?? 0, 2);
+
+// 2. Order Statistics by Status
+$stmt = $db->query("
+    SELECT Status, COUNT(*) as count 
+    FROM Orders 
+    GROUP BY Status
+");
+$ordersByStatus = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 3. Top 10 Best Selling Products
+$stmt = $db->prepare("
+    SELECT p.ProductName, b.BrandName, SUM(od.Quantity) as total_sold, SUM(od.Price * od.Quantity) as revenue
+    FROM OrderDetails od
+    JOIN ProductDetail pd ON od.ProductDetailID = pd.ProductDetailID
+    JOIN Product p ON pd.ProductID = p.ProductID
+    LEFT JOIN Brand b ON p.BrandID = b.BrandID
+    JOIN Orders o ON od.OrderID = o.OrderID
+    WHERE o.Status IN ('delivered', 'shipped')
+    GROUP BY p.ProductID
+    ORDER BY total_sold DESC
+    LIMIT 10
+");
+$stmt->execute();
+$topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 4. Revenue by Category
+$stmt = $db->query("
+    SELECT c.CategoryName, SUM(od.Price * od.Quantity) as revenue, COUNT(DISTINCT od.OrderID) as orders
+    FROM OrderDetails od
+    JOIN ProductDetail pd ON od.ProductDetailID = pd.ProductDetailID
+    JOIN Product p ON pd.ProductID = p.ProductID
+    JOIN Categories c ON p.CategoryID = c.CategoryID
+    JOIN Orders o ON od.OrderID = o.OrderID
+    WHERE o.Status IN ('delivered', 'shipped')
+    GROUP BY c.CategoryID
+    ORDER BY revenue DESC
+");
+$categoryRevenue = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 5. Revenue by Brand
+$stmt = $db->query("
+    SELECT b.BrandName, SUM(od.Price * od.Quantity) as revenue, COUNT(DISTINCT od.OrderID) as orders
+    FROM OrderDetails od
+    JOIN ProductDetail pd ON od.ProductDetailID = pd.ProductDetailID
+    JOIN Product p ON pd.ProductID = p.ProductID
+    LEFT JOIN Brand b ON p.BrandID = b.BrandID
+    JOIN Orders o ON od.OrderID = o.OrderID
+    WHERE o.Status IN ('delivered', 'shipped')
+    GROUP BY b.BrandID
+    ORDER BY revenue DESC
+");
+$brandRevenue = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 6. Recent User Activity (Last 30 days)
+$stmt = $db->query("
+    SELECT COUNT(*) as new_users
+    FROM Users
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+");
+$newUsers30Days = $stmt->fetch()['new_users'];
+
+// 7. Recent Orders (Last 30 days)
+$stmt = $db->query("
+    SELECT COUNT(*) as recent_orders, SUM(TotalAmount) as recent_revenue
+    FROM Orders
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+");
+$recentOrdersData = $stmt->fetch();
+$recentOrders30Days = $recentOrdersData['recent_orders'];
+$recentRevenue30Days = $recentOrdersData['recent_revenue'] ?? 0;
+
+// 8. Low Stock Products (less than 10 items)
+$stmt = $db->prepare("
+    SELECT p.ProductName, b.BrandName, SUM(pd.Quantity) as TotalStock
+    FROM Product p
+    LEFT JOIN ProductDetail pd ON p.ProductID = pd.ProductID
+    LEFT JOIN Brand b ON p.BrandID = b.BrandID
+    GROUP BY p.ProductID
+    HAVING TotalStock < 10 OR TotalStock IS NULL
+    ORDER BY TotalStock ASC
+    LIMIT 20
+");
+$stmt->execute();
+$lowStockProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 9. Top Customers
+$stmt = $db->query("
+    SELECT 
+        CONCAT(u.FirstName, ' ', u.LastName) as FullName,
+        u.Email,
+        COUNT(o.OrderID) as total_orders,
+        SUM(o.TotalAmount) as total_spent
+    FROM Users u
+    JOIN Orders o ON u.UserID = o.UserID
+    WHERE o.Status IN ('delivered', 'shipped')
+    GROUP BY u.UserID
+    ORDER BY total_spent DESC
+    LIMIT 10
+");
+$topCustomers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 10. Monthly Revenue (Last 6 months)
+$stmt = $db->query("
+    SELECT 
+        DATE_FORMAT(created_at, '%Y-%m') as month,
+        SUM(TotalAmount) as revenue,
+        COUNT(*) as orders
+    FROM Orders
+    WHERE Status IN ('delivered', 'shipped')
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+    ORDER BY month DESC
+");
+$monthlyRevenue = $stmt->fetchAll(PDO::FETCH_ASSOC);
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 // ===========================
 // GENERATE PDF USING FPDF-like approach (pure PHP)

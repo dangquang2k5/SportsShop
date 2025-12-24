@@ -12,6 +12,7 @@ if ($orderID <= 0) {
     die('Mã đơn hàng không hợp lệ');
 }
 
+<<<<<<< HEAD
 // Get order details from API
 $orderResponse = makeApiRequest('/orders/' . $orderID);
 
@@ -21,11 +22,50 @@ if (!$orderResponse['success']) {
 
 $order = $orderResponse['data']['order'] ?? [];
 $orderItems = $orderResponse['data']['items'] ?? [];
+=======
+$db = Database::getInstance()->getConnection();
+
+// Get order details
+$stmt = $db->prepare("
+    SELECT o.*, 
+           CONCAT(u.FirstName, ' ', u.LastName) as CustomerName,
+           u.Email as CustomerEmail,
+           u.Phone as CustomerPhone,
+           v.VoucherCode,
+           v.DiscountValue
+    FROM Orders o
+    LEFT JOIN Users u ON o.UserID = u.UserID
+    LEFT JOIN Voucher v ON o.VoucherID = v.VoucherID
+    WHERE o.OrderID = ? AND o.UserID = ?
+");
+$stmt->execute([$orderID, $_SESSION['user_id']]);
+$order = $stmt->fetch();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 if (!$order) {
     die('Không tìm thấy đơn hàng hoặc bạn không có quyền xem đơn hàng này');
 }
 
+<<<<<<< HEAD
+=======
+// Get order items
+$stmt = $db->prepare("
+    SELECT od.*, 
+           p.ProductName,
+           p.MainImage,
+           b.BrandName,
+           pd.Size,
+           pd.Color
+    FROM OrderDetails od
+    JOIN ProductDetail pd ON od.ProductDetailID = pd.ProductDetailID
+    JOIN Product p ON pd.ProductID = p.ProductID
+    LEFT JOIN Brand b ON p.BrandID = b.BrandID
+    WHERE od.OrderID = ?
+");
+$stmt->execute([$orderID]);
+$orderItems = $stmt->fetchAll();
+
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 // Calculate totals
 $subtotal = 0;
 foreach ($orderItems as $item) {

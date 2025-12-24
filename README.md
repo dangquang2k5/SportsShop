@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SportShop E-Commerce Platform
 
 Hệ thống thương mại điện tử bán đồ thể thao với kiến trúc phân tách Backend (Node.js/Express) và Frontend (PHP).
@@ -292,3 +293,6 @@ Developed by SportShop Team
 ---
 
 **Note**: Đây là phiên bản đã migrate sang kiến trúc backend riêng biệt. Workflow của admin và user giữ nguyên 100%, chỉ thay đổi cách xử lý dữ liệu bên dưới.
+=======
+#SportsShop
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345

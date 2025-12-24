@@ -5,12 +5,20 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
 $message = '';
+=======
+$db = Database::getInstance()->getConnection();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 // Handle coupon actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
+<<<<<<< HEAD
+=======
+    // SỬA 1: Dùng tên cột PascalCase
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     if ($action === 'add') {
         $voucherCode = strtoupper(trim($_POST['VoucherCode']));
         $discountValue = (float)$_POST['DiscountValue'];
@@ -19,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $endDate = $_POST['EndDate'];
         $quantity = (int)$_POST['Quantity'];
         
+<<<<<<< HEAD
         // Use backend API to add voucher
         $response = makeApiRequest('/vouchers', 'POST', [
             'voucherCode' => $voucherCode,
@@ -34,6 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $message = 'Lỗi: ' . ($response['message'] ?? 'Không thể thêm mã giảm giá');
         }
+=======
+        // SỬA 2: Sửa tên Bảng và Cột.
+        $stmt = $db->prepare("INSERT INTO Voucher (VoucherCode, DiscountValue, StartDate, EndDate, Quantity, MinOrderValue) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$voucherCode, $discountValue, $startDate, $endDate, $quantity, $minOrderValue]);
+        $message = 'Đã thêm mã giảm giá mới';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
     } elseif ($action === 'edit') {
         $voucherId = (int)$_POST['VoucherID'];
@@ -44,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $endDate = $_POST['EndDate'];
         $quantity = (int)$_POST['Quantity'];
         
+<<<<<<< HEAD
         // Use backend API to update voucher
         $response = makeApiRequest('/vouchers/' . $voucherId, 'PUT', [
             'voucherCode' => $voucherCode,
@@ -71,12 +87,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $message = 'Lỗi: ' . ($response['message'] ?? 'Không thể xóa mã giảm giá');
         }
+=======
+        // SỬA 3: Sửa tên Bảng và Cột.
+        $stmt = $db->prepare("UPDATE Voucher SET VoucherCode = ?, DiscountValue = ?, StartDate = ?, EndDate = ?, Quantity = ?, MinOrderValue = ? WHERE VoucherID = ?");
+        $stmt->execute([$voucherCode, $discountValue, $startDate, $endDate, $quantity, $minOrderValue, $voucherId]);
+        $message = 'Đã cập nhật mã giảm giá';
+
+    } elseif ($action === 'delete') {
+        $voucherId = (int)$_POST['VoucherID'];
+        // SỬA 4: Sửa tên Bảng và Cột.
+        $stmt = $db->prepare("DELETE FROM Voucher WHERE VoucherID = ?");
+        $stmt->execute([$voucherId]);
+        $message = 'Đã xóa mã giảm giá';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     }
     
     header('Location: admin_coupons.php?message=' . urlencode($message));
     exit;
 }
 
+<<<<<<< HEAD
 // Get vouchers from API
 $couponsResponse = makeApiRequest('/vouchers');
 $coupons = $couponsResponse['success'] ? $couponsResponse['data'] ?? [] : [];
@@ -94,6 +124,23 @@ foreach ($coupons as $coupon) {
         $expiredCoupons++;
     }
 }
+=======
+// SỬA 5: Xóa logic lọc 'status'
+$sql = "SELECT * FROM Voucher ORDER BY created_at DESC";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$coupons = $stmt->fetchAll();
+
+// SỬA 6: Sửa thống kê
+$stmt = $db->query("SELECT COUNT(*) as total FROM Voucher");
+$totalCoupons = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Voucher WHERE EndDate >= CURDATE()");
+$activeCoupons = $stmt->fetch()['total'];
+
+$stmt = $db->query("SELECT COUNT(*) as total FROM Voucher WHERE EndDate < CURDATE()");
+$expiredCoupons = $stmt->fetch()['total'];
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 ?>
 <!DOCTYPE html>
 <html lang="vi">

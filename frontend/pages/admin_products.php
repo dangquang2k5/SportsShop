@@ -5,9 +5,13 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
 // Get products from API
 $productsResponse = makeApiRequest('/products');
 $products = $productsResponse['success'] ? $productsResponse['data']['products'] ?? [] : [];
+=======
+$db = Database::getInstance()->getConnection();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 // Helper function to get correct image path
 function getImagePath($imagePath) {
@@ -177,8 +181,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         // Insert product
+<<<<<<< HEAD
         // SỬA: Thêm cột Status vào câu lệnh INSERT
         $stmt = $db->prepare("INSERT INTO Product (ProductName, Description, Price, CategoryID, BrandID, MainImage, Status) VALUES (?, ?, ?, ?, ?, ?, 'active')");
+=======
+        $stmt = $db->prepare("INSERT INTO Product (ProductName, Description, Price, CategoryID, BrandID, MainImage) VALUES (?, ?, ?, ?, ?, ?)");
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
         $stmt->execute([$productName, $description, $price, $categoryId, $brandId, $mainImage]);
         $productID = $db->lastInsertId();
         
@@ -224,10 +232,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         header("Location: admin_products.php?message=Thêm sản phẩm mới thành công");
         exit;
     } catch (PDOException $e) {
+<<<<<<< HEAD
         // SỬA: Chuyển hướng với thông báo lỗi để gỡ lỗi
         $errorMessage = urlencode('Lỗi CSDL: ' . $e->getMessage());
         header("Location: admin_products.php?error=" . $errorMessage);
         exit;
+=======
+        $error = 'Lỗi CSDL: ' . $e->getMessage();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     }
 }
 
@@ -346,7 +358,11 @@ include '../includes/layout_header.php';
 
     <section class="py-8 bg-gray-50 dark:bg-sport-navy">
         <div class="container mx-auto px-4 lg:px-8">
+<<<<<<< HEAD
             <!-- Messages -->
+=======
+            <!-- Message -->
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
             <?php if (isset($_GET['message'])): ?>
                 <div class="modern-card bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-xl p-4 mb-6 animate-slide-down">
                     <div class="flex items-center">
@@ -355,6 +371,7 @@ include '../includes/layout_header.php';
                     </div>
                 </div>
             <?php endif; ?>
+<<<<<<< HEAD
             <?php if (isset($_GET['error'])): ?>
                 <div class="modern-card bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-xl p-4 mb-6 animate-slide-down">
                     <div class="flex items-center">
@@ -363,6 +380,8 @@ include '../includes/layout_header.php';
                     </div>
                 </div>
             <?php endif; ?>
+=======
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
             <!-- Search -->
             <div class="modern-card bg-white dark:bg-sport-blue rounded-2xl p-6 mb-6 shadow-lg">

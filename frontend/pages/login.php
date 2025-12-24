@@ -6,12 +6,17 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+<<<<<<< HEAD
+=======
+    // SỬA 1: Lấy 'phone' thay vì 'username'
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     $phone = sanitizeInput($_POST['phone']);
     $password = $_POST['password'];
     
     if (empty($phone) || empty($password)) {
         $error = 'Vui lòng nhập đầy đủ thông tin';
     } else {
+<<<<<<< HEAD
         // Use backend API for authentication
         $response = makeApiRequest('/auth/login', 'POST', [
             'phone' => $phone,
@@ -32,6 +37,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } else {
             $error = $response['message'] ?? 'Số điện thoại hoặc mật khẩu không đúng';
+=======
+        $db = Database::getInstance()->getConnection();
+        
+        // SỬA 2: Tìm bằng cột 'Phone'. Không kiểm tra status ở đây
+        // để chúng ta có thể đưa ra lỗi "Tài khoản bị khóa"
+        $stmt = $db->prepare("SELECT * FROM Users WHERE Phone = ?");
+        $stmt->execute([$phone]);
+        $user = $stmt->fetch();
+        
+        // SỬA 3: Kiểm tra bằng cột 'Password' (CSDL mới)
+        if ($user && password_verify($password, $user['Password'])) {
+            
+            // SỬA 4: Thêm kiểm tra cột 'Status' (1 = true/Hoạt động)
+            if ($user['Status'] == 1) {
+                
+                // SỬA 5: Lưu Session với tên cột PascalCase mới
+                $_SESSION['user_id'] = $user['UserID'];
+                $_SESSION['full_name'] = $user['FirstName'] . ' ' . $user['LastName']; // Ghép tên
+                $_SESSION['role'] = $user['Role'];
+                
+                if ($user['Role'] === 'admin') {
+                    redirect('admin_dashboard.php');
+                } else {
+                    redirect('../index.php');
+                }
+            } else {
+                // Mật khẩu đúng, nhưng tài khoản bị khóa (Status = 0)
+                $error = 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.';
+            }
+        } else {
+            // Không tìm thấy SĐT hoặc sai mật khẩu
+            $error = 'Số điện thoại hoặc mật khẩu không đúng';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
         }
     }
 }

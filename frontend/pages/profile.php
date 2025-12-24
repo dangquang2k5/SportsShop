@@ -5,6 +5,10 @@ if (!isLoggedIn()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
+=======
+$db = Database::getInstance()->getConnection();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 $message = '';
 $error = '';
 
@@ -19,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         if (empty($firstName) || empty($lastName) || empty($phone)) {
             $error = 'Vui lòng điền đầy đủ thông tin bắt buộc';
         } else {
+<<<<<<< HEAD
             // Use backend API for profile update
             $response = makeApiRequest('/users/profile', 'PUT', [
                 'firstName' => $firstName,
@@ -31,6 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $message = 'Cập nhật thông tin thành công!';
             } else {
                 $error = $response['message'] ?? 'Có lỗi xảy ra khi cập nhật thông tin';
+=======
+            $stmt = $db->prepare("UPDATE Users SET FirstName = ?, LastName = ?, Phone = ?, Address = ? WHERE UserID = ?");
+            if ($stmt->execute([$firstName, $lastName, $phone, $address, $_SESSION['user_id']])) {
+                $message = 'Cập nhật thông tin thành công!';
+            } else {
+                $error = 'Có lỗi xảy ra khi cập nhật thông tin';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
             }
         }
     } elseif ($_POST['action'] === 'change_password') {
@@ -38,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $newPassword = $_POST['new_password'];
         $confirmPassword = $_POST['confirm_password'];
         
+<<<<<<< HEAD
         if (empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
             $error = 'Vui lòng điền đầy đủ thông tin';
         } elseif ($newPassword !== $confirmPassword) {
@@ -55,11 +68,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $message = 'Đổi mật khẩu thành công!';
             } else {
                 $error = $response['message'] ?? 'Có lỗi xảy ra khi đổi mật khẩu';
+=======
+        // Get current password from database
+        $stmt = $db->prepare("SELECT Password FROM Users WHERE UserID = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $userPassword = $stmt->fetch();
+        
+        if (empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
+            $error = 'Vui lòng điền đầy đủ thông tin';
+        } elseif (!password_verify($currentPassword, $userPassword['Password'])) {
+            $error = 'Mật khẩu hiện tại không đúng';
+        } elseif ($newPassword !== $confirmPassword) {
+            $error = 'Mật khẩu mới và xác nhận mật khẩu không khớp';
+        } elseif (strlen($newPassword) < 6) {
+            $error = 'Mật khẩu mới phải có ít nhất 6 ký tự';
+        } else {
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            $stmt = $db->prepare("UPDATE Users SET Password = ? WHERE UserID = ?");
+            if ($stmt->execute([$hashedPassword, $_SESSION['user_id']])) {
+                $message = 'Đổi mật khẩu thành công!';
+            } else {
+                $error = 'Có lỗi xảy ra khi đổi mật khẩu';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
             }
         }
     }
 }
 
+<<<<<<< HEAD
 // Get user info from API
 $userResponse = makeApiRequest('/auth/me');
 $user = $userResponse['success'] ? $userResponse['data'] : null;
@@ -67,6 +103,43 @@ $user = $userResponse['success'] ? $userResponse['data'] : null;
 // Get user orders from API
 $ordersResponse = makeApiRequest('/orders?limit=5');
 $orders = $ordersResponse['success'] ? $ordersResponse['data']['orders'] ?? [] : [];
+=======
+// Get user info
+$stmt = $db->prepare("SELECT * FROM Users WHERE UserID = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$user = $stmt->fetch();
+
+// Get user orders
+$stmt = $db->prepare("
+    SELECT * FROM Orders 
+    WHERE UserID = ? 
+    ORDER BY created_at DESC 
+    LIMIT 10
+");
+$stmt->execute([$_SESSION['user_id']]);
+$orders = $stmt->fetchAll();
+
+// Get order items for each order
+$orderDetails = [];
+foreach ($orders as $order) {
+    $stmt = $db->prepare("
+        SELECT 
+            od.*, 
+            pd.Size, 
+            pd.Color, 
+            pd.Image as VariantImage,
+            p.ProductName,
+            p.Price,
+            p.MainImage
+        FROM OrderDetails od
+        JOIN ProductDetail pd ON od.ProductDetailID = pd.ProductDetailID
+        JOIN Product p ON pd.ProductID = p.ProductID
+        WHERE od.OrderID = ?
+    ");
+    $stmt->execute([$order['OrderID']]);
+    $orderDetails[$order['OrderID']] = $stmt->fetchAll();
+}
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 $pageTitle = "Tài khoản của tôi";
 $isInPages = true;

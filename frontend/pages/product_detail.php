@@ -7,6 +7,7 @@ if (!$productID) {
     redirect('products.php');
 }
 
+<<<<<<< HEAD
 // Get product details from API
 $response = makeApiRequest('/products/' . $productID);
 if (!$response['success']) {
@@ -17,6 +18,9 @@ $product = $response['data'];
 // Get product variants from API
 $variantsResponse = makeApiRequest('/products/' . $productID . '/variants');
 $variants = $variantsResponse['success'] ? $variantsResponse['data'] : [];
+=======
+$db = Database::getInstance()->getConnection();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 // Helper function to get correct image path
 function getImagePath($imagePath) {

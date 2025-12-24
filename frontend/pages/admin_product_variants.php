@@ -5,6 +5,11 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect('login.php');
 }
 
+<<<<<<< HEAD
+=======
+$db = Database::getInstance()->getConnection();
+
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 // Lấy ProductID từ URL
 $productID = isset($_GET['ProductID']) ? (int)$_GET['ProductID'] : 0;
 if ($productID === 0) {
@@ -12,11 +17,20 @@ if ($productID === 0) {
 }
 
 // Lấy thông tin sản phẩm chung
+<<<<<<< HEAD
 $productResponse = makeApiRequest('/products/' . $productID);
 if (!$productResponse['success']) {
     redirect('admin_products.php?message=Không tìm thấy sản phẩm');
 }
 $product = $productResponse['data'] ?? [];
+=======
+$stmt = $db->prepare("SELECT * FROM Product WHERE ProductID = ?");
+$stmt->execute([$productID]);
+$product = $stmt->fetch();
+if (!$product) {
+    redirect('admin_products.php?message=Không tìm thấy sản phẩm');
+}
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
 // Xử lý POST actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $size = trim($_POST['Size']);
             $color = trim($_POST['Color']);
             $quantity = (int)$_POST['Quantity'];
+<<<<<<< HEAD
             
             // Use backend API to add variant
             $response = makeApiRequest('/products/' . $productID . '/variants', 'POST', [
@@ -52,6 +67,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 throw new Exception($response['message'] ?? 'Không thể xóa biến thể');
             }
+=======
+            $image = trim($_POST['Image']);
+
+            $stmt = $db->prepare("
+                INSERT INTO ProductDetail (ProductID, Size, Color, Quantity, Image)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([$productID, $size, $color, $quantity, $image]);
+            $message = 'Đã thêm biến thể mới';
+
+        } elseif ($action === 'delete_variant') {
+            $productDetailID = (int)$_POST['ProductDetailID'];
+            $stmt = $db->prepare("DELETE FROM ProductDetail WHERE ProductDetailID = ? AND ProductID = ?");
+            $stmt->execute([$productDetailID, $productID]);
+            $message = 'Đã xóa biến thể';
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 
         } elseif ($action === 'import_stock') {
             // Gọi Stored Procedure để nhập kho
@@ -59,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $additionalQuantity = (int)$_POST['additionalQuantity'];
             $reason = 'Admin nhập kho';
 
+<<<<<<< HEAD
             // Use backend API to import stock
             $response = makeApiRequest('/products/' . $productID . '/variants/' . $productDetailID . '/import', 'POST', [
                 'additionalQuantity' => $additionalQuantity,
@@ -74,6 +106,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } catch (Exception $e) {
         $error = 'Lỗi: ' . $e->getMessage();
+=======
+            $stmt = $db->prepare("CALL sp_ImportStock(?, ?, ?)");
+            $stmt->execute([$productDetailID, $additionalQuantity, $reason]);
+            $message = 'Đã nhập thêm ' . $additionalQuantity . ' sản phẩm vào kho';
+        }
+
+    } catch (PDOException $e) {
+        $error = 'Lỗi CSDL: ' . $e->getMessage();
+        // Kiểm tra lỗi UNIQUE (trùng biến thể)
+        if ($e->getCode() == '23000') { 
+            $error = 'Lỗi: Biến thể (Size + Màu) này đã tồn tại.';
+        }
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     }
     
     // Tải lại trang để thấy thay đổi
@@ -87,9 +132,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+<<<<<<< HEAD
 // Lấy danh sách biến thể của sản phẩm
 $variantsResponse = makeApiRequest('/products/' . $productID . '/variants');
 $variants = $variantsResponse['success'] ? $variantsResponse['data']['variants'] ?? [] : [];
+=======
+// Lấy danh sách biến thể hiện tại
+$stmt = $db->prepare("SELECT * FROM ProductDetail WHERE ProductID = ? ORDER BY Size, Color");
+$stmt->execute([$productID]);
+$variants = $stmt->fetchAll();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 ?>
 <!DOCTYPE html>
 <html lang="vi">

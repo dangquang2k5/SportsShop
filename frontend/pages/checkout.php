@@ -35,6 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Giỏ hàng trống';
     } else {
         try {
+<<<<<<< HEAD
+=======
+            $db = Database::getInstance()->getConnection();
+            $db->beginTransaction();
+            
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
             // Parse cart data
             $cart = json_decode($cartData, true);
             $coupon = !empty($couponData) ? json_decode($couponData, true) : null;
@@ -45,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $subtotal += $item['price'] * $item['quantity'];
             }
             
+<<<<<<< HEAD
             // Use backend API for order creation
             $orderData = [
                 'shippingAddress' => $shippingAddress,
@@ -66,14 +73,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $error = $response['message'] ?? 'Có lỗi xảy ra khi tạo đơn hàng';
             }
+=======
+            // Calculate discount
+            $discount = 0;
+            $voucherID = null;
+            if ($coupon && $subtotal >= $coupon['MinOrderValue']) {
+                $discount = $coupon['DiscountValue'];
+                $voucherID = $coupon['VoucherID'];
+                
+                // Decrease voucher quantity
+                $stmt = $db->prepare("UPDATE Voucher SET Quantity = Quantity - 1 WHERE VoucherID = ? AND Quantity > 0");
+                $stmt->execute([$voucherID]);
+            }
+            
+            // Calculate shipping
+            $shipping = $subtotal >= 500000 ? 0 : 30000;
+            $totalAmount = $subtotal - $discount + $shipping;
+            
+            // Create order
+            $fullAddress = $shippingAddress . ', ' . $shippingCity;
+            $userID = isLoggedIn() ? $_SESSION['user_id'] : null; // Guest checkout: NULL user ID
+            
+            // Add guest info to notes if guest checkout
+            $guestInfo = '';
+            if (!isLoggedIn()) {
+                $guestInfo = "THÔNG TIN KHÁCH VÃNG LAI:\nHọ tên: $guestName\nEmail: $guestEmail\n";
+            }
+            $fullNotes = $guestInfo . $notes;
+            
+            $stmt = $db->prepare("
+                INSERT INTO Orders (UserID, TotalAmount, Address, Status, VoucherID, Note, created_at) 
+                VALUES (?, ?, ?, 'pending', ?, ?, NOW())
+            ");
+            $stmt->execute([
+                $userID,
+                $totalAmount,
+                $fullAddress,
+                $voucherID,
+                $fullNotes
+            ]);
+            
+            $orderID = $db->lastInsertId();
+            
+            // Create order details
+            $stmt = $db->prepare("
+                INSERT INTO OrderDetails (OrderID, ProductDetailID, Quantity, Price) 
+                VALUES (?, ?, ?, ?)
+            ");
+            
+            foreach ($cart as $item) {
+                $stmt->execute([
+                    $orderID,
+                    $item['productDetailId'],
+                    $item['quantity'],
+                    $item['price']
+                ]);
+            }
+            
+            $db->commit();
+            $success = 'Đơn hàng của bạn đã được đặt thành công!';
+            
+        } catch (Exception $e) {
+            $db->rollBack();
+            $error = 'Có lỗi xảy ra: ' . $e->getMessage();
+        }
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
     }
 }
 
 // Get user info if logged in
 $user = null;
 if (isLoggedIn()) {
+<<<<<<< HEAD
     $userResponse = makeApiRequest('/auth/me');
     $user = $userResponse['success'] ? $userResponse['data'] : null;
+=======
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->prepare("SELECT * FROM Users WHERE UserID = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch();
+>>>>>>> 3d6d58ed3875cc3c551e3fe1991339ab7637c345
 }
 
 $pageTitle = "Thanh toán";
